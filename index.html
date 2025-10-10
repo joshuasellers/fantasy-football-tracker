@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fantasy Football Roster Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1><i class="fas fa-football-ball"></i> Fantasy Football Roster Tracker</h1>
+            <nav class="nav">
+                <button class="nav-btn active" data-section="dashboard">Dashboard</button>
+                <button class="nav-btn" data-section="lineups">Starting Lineups</button>
+                <button class="nav-btn" data-section="recommendations">Bench Recommendations</button>
+                <button class="nav-btn" data-section="scoring">Scoring & Notifications</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active">
+                <h2>Dashboard Overview</h2>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-users"></i> Active Teams</h3>
+                        <div class="stat-number" id="active-teams">0</div>
+                        <p>Teams across all leagues</p>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Lineup Alerts</h3>
+                        <div class="stat-number" id="lineup-alerts">0</div>
+                        <p>Players to consider benching</p>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-bell"></i> Notifications</h3>
+                        <div class="stat-number" id="notifications-count">0</div>
+                        <p>Unread league updates</p>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-trophy"></i> Best Projection</h3>
+                        <div class="stat-number" id="best-projection">0</div>
+                        <p>Points from top player</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Starting Lineups Section -->
+            <section id="lineups" class="section">
+                <h2>Starting Lineups</h2>
+                <div class="api-connection">
+                    <h3>Connect to Sleeper</h3>
+                    <div class="connection-form">
+                        <input type="text" id="sleeper-username" placeholder="Enter your Sleeper username" value="jselles216" />
+                        <button id="connect-sleeper" class="btn btn-primary">Connect to Sleeper</button>
+                    </div>
+                    <p class="connection-note">Enter your Sleeper username to load real league data</p>
+                </div>
+                <div class="league-selector">
+                    <label for="league-select">Select League:</label>
+                    <select id="league-select">
+                        <option value="">Choose a league...</option>
+                        <option value="sleeper-1">Sleeper League 1</option>
+                        <option value="espn-1">ESPN League 1</option>
+                    </select>
+                </div>
+                <div class="lineup-container" id="lineup-container">
+                    <div class="lineup-card">
+                        <h3>QB - Starting</h3>
+                        <div class="player-card">
+                            <div class="player-info">
+                                <span class="player-name">Josh Allen</span>
+                                <span class="player-team">BUF</span>
+                            </div>
+                            <div class="player-stats">
+                                <span class="projection">Proj: 24.5</span>
+                                <span class="status starting">Starting</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lineup-card">
+                        <h3>RB - Starting</h3>
+                        <div class="player-card">
+                            <div class="player-info">
+                                <span class="player-name">Christian McCaffrey</span>
+                                <span class="player-team">SF</span>
+                            </div>
+                            <div class="player-stats">
+                                <span class="projection">Proj: 18.2</span>
+                                <span class="status starting">Starting</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lineup-card">
+                        <h3>WR - Starting</h3>
+                        <div class="player-card">
+                            <div class="player-info">
+                                <span class="player-name">Tyreek Hill</span>
+                                <span class="player-team">MIA</span>
+                            </div>
+                            <div class="player-stats">
+                                <span class="projection">Proj: 16.8</span>
+                                <span class="status starting">Starting</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bench Recommendations Section -->
+            <section id="recommendations" class="section">
+                <h2>Bench Recommendations</h2>
+                <p class="section-description">Players you should consider benching for better options</p>
+                <div class="recommendations-container" id="recommendations-container">
+                    <div class="recommendation-card">
+                        <div class="recommendation-header">
+                            <h3><i class="fas fa-arrow-down"></i> Consider Benching</h3>
+                            <span class="alert-badge">High Priority</span>
+                        </div>
+                        <div class="player-comparison">
+                            <div class="current-starter">
+                                <h4>Currently Starting</h4>
+                                <div class="player-card">
+                                    <div class="player-info">
+                                        <span class="player-name">Mike Evans</span>
+                                        <span class="player-team">TB</span>
+                                    </div>
+                                    <div class="player-stats">
+                                        <span class="projection">Proj: 8.5</span>
+                                        <span class="status starting">Starting</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="vs-divider">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                            <div class="bench-option">
+                                <h4>Better Option on Bench</h4>
+                                <div class="player-card">
+                                    <div class="player-info">
+                                        <span class="player-name">Stefon Diggs</span>
+                                        <span class="player-team">BUF</span>
+                                    </div>
+                                    <div class="player-stats">
+                                        <span class="projection">Proj: 12.3</span>
+                                        <span class="status bench">On Bench</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="recommendation-actions">
+                            <button class="btn btn-primary">Make Swap</button>
+                            <button class="btn btn-secondary">Dismiss</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scoring & Notifications Section -->
+            <section id="scoring" class="section">
+                <h2>Scoring & League Notifications</h2>
+                <div class="scoring-tabs">
+                    <button class="tab-btn active" data-tab="live-scoring">Live Scoring</button>
+                    <button class="tab-btn" data-tab="notifications">League Updates</button>
+                </div>
+                
+                <div class="tab-content active" id="live-scoring">
+                    <div class="scoring-grid">
+                        <div class="team-score-card">
+                            <h3>Team 1 (Sleeper)</h3>
+                            <div class="score-display">
+                                <span class="current-score">87.5</span>
+                                <span class="projected-score">Proj: 142.3</span>
+                            </div>
+                            <div class="score-breakdown">
+                                <div class="position-score">
+                                    <span>QB: 24.5</span>
+                                    <span>RB: 18.2</span>
+                                    <span>WR: 16.8</span>
+                                    <span>TE: 8.0</span>
+                                    <span>K: 12.0</span>
+                                    <span>DEF: 7.0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="team-score-card">
+                            <h3>Team 2 (ESPN)</h3>
+                            <div class="score-display">
+                                <span class="current-score">92.3</span>
+                                <span class="projected-score">Proj: 138.7</span>
+                            </div>
+                            <div class="score-breakdown">
+                                <div class="position-score">
+                                    <span>QB: 22.1</span>
+                                    <span>RB: 20.5</span>
+                                    <span>WR: 19.2</span>
+                                    <span>TE: 6.5</span>
+                                    <span>K: 10.0</span>
+                                    <span>DEF: 14.0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="notifications">
+                    <div class="notifications-list">
+                        <div class="notification-item">
+                            <div class="notification-icon">
+                                <i class="fas fa-trade"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h4>Trade Proposal</h4>
+                                <p>You received a trade offer in Sleeper League 1</p>
+                                <span class="notification-time">2 hours ago</span>
+                            </div>
+                            <div class="notification-actions">
+                                <button class="btn btn-sm btn-primary">View</button>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <div class="notification-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h4>Waiver Claim</h4>
+                                <p>Your waiver claim for Tyler Lockett was successful</p>
+                                <span class="notification-time">1 day ago</span>
+                            </div>
+                            <div class="notification-actions">
+                                <button class="btn btn-sm btn-secondary">Dismiss</button>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <div class="notification-icon">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h4>Lineup Alert</h4>
+                                <p>Player injury update: Check your starting lineup</p>
+                                <span class="notification-time">3 hours ago</span>
+                            </div>
+                            <div class="notification-actions">
+                                <button class="btn btn-sm btn-primary">Review</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Fantasy Football Roster Tracker. Built for Sleeper & ESPN leagues.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
