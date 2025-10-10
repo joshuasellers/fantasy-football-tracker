@@ -7,7 +7,8 @@ A comprehensive web application to help you track and manage your fantasy footba
 ### 🏈 Starting Lineups
 - View who is starting today across all your teams
 - League-specific lineup management
-- Support for both Sleeper and ESPN leagues
+- **Sleeper API integration** - Real-time data from your Sleeper leagues
+- ESPN integration coming soon!
 
 ### 📊 Bench Recommendations
 - Intelligent analysis to identify players you should consider benching
@@ -33,10 +34,10 @@ A comprehensive web application to help you track and manage your fantasy footba
 
 ### Using with Real Sleeper Data
 
-1. Go to the "Starting Lineups" section
-2. Enter your Sleeper username in the connection form
-3. Click "Connect to Sleeper" to load your real league data
-4. Select your league from the dropdown to view your actual roster
+1. **Automatic Loading**: Your Sleeper leagues will load automatically when you open the page (username: jselles216)
+2. **Manual Connection**: You can also manually enter your Sleeper username in the "Starting Lineups" section
+3. **Select League**: Choose from your loaded leagues in the dropdown to view your actual roster
+4. **Real-time Data**: All player information, lineups, and scores are pulled directly from Sleeper
 
 ## File Structure
 
@@ -69,11 +70,12 @@ This application includes:
 - ✅ Player data mapping
 - ✅ Matchup data retrieval
 
-### ESPN API
+### ESPN API (Coming Soon)
 - League connection
 - Player statistics
 - Projection data
 - Notification system
+- Multi-platform roster management
 
 ## Customization
 

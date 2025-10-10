@@ -12,6 +12,7 @@ class FantasyTracker {
         this.setupEventListeners();
         this.loadSampleData();
         this.updateDashboard();
+        this.autoLoadUserData();
     }
 
     setupEventListeners() {
@@ -83,7 +84,7 @@ class FantasyTracker {
     }
 
     loadSampleData() {
-        // Sample team data
+        // Sample team data (will be replaced by real Sleeper data)
         this.teams = [
             {
                 id: 'sleeper-1',
@@ -98,18 +99,6 @@ class FantasyTracker {
                 ],
                 currentScore: 87.5,
                 projectedScore: 142.3
-            },
-            {
-                id: 'espn-1',
-                name: 'ESPN League 1',
-                platform: 'ESPN',
-                players: [
-                    { name: 'Lamar Jackson', team: 'BAL', position: 'QB', projection: 22.1, status: 'starting' },
-                    { name: 'Derrick Henry', team: 'TEN', position: 'RB', projection: 20.5, status: 'starting' },
-                    { name: 'Davante Adams', team: 'LV', position: 'WR', projection: 19.2, status: 'starting' }
-                ],
-                currentScore: 92.3,
-                projectedScore: 138.7
             }
         ];
 
@@ -287,9 +276,15 @@ class FantasyTracker {
         this.teams.forEach(team => {
             const option = document.createElement('option');
             option.value = team.id;
-            option.textContent = `${team.name} (${team.platform})`;
+            option.textContent = `${team.name} (${team.platform}) - ${team.players.length} players`;
             selector.appendChild(option);
         });
+        
+        // Auto-select first league if available
+        if (this.teams.length > 0) {
+            selector.value = this.teams[0].id;
+            this.loadLeagueData(this.teams[0].id);
+        }
     }
 
     showNotification(message, type = 'info') {
@@ -388,23 +383,25 @@ class FantasyTracker {
     }
 
     async connectToESPNAPI() {
-        // Placeholder for ESPN API integration
-        console.log('Connecting to ESPN API...');
+        // TODO: ESPN API integration coming soon
+        console.log('ESPN API integration planned for future release');
+        this.showNotification('ESPN integration coming soon!', 'info');
         // Would implement actual API calls here
     }
 
     async syncLeagueData() {
-        // Placeholder for syncing data from both platforms
-        console.log('Syncing league data...');
+        // TODO: Multi-platform sync coming soon (Sleeper + ESPN)
+        console.log('Multi-platform sync planned for future release');
+        this.showNotification('Multi-platform sync coming soon!', 'info');
         // Would implement actual sync logic here
     }
 
     // Convert Sleeper API data to our internal format
-    convertSleeperDataToInternal(sleeperData, playersData) {
+    convertSleeperDataToInternal(sleeperData, playersData, userId) {
         const { league, rosters, users, matchups } = sleeperData;
         
         // Find user's roster
-        const userRoster = rosters.find(roster => roster.owner_id);
+        const userRoster = rosters.find(roster => roster.owner_id === userId);
         if (!userRoster) return null;
 
         // Get user info
@@ -413,7 +410,19 @@ class FantasyTracker {
         // Convert roster players to our format
         const convertedPlayers = userRoster.players.map(playerId => {
             const player = playersData[playerId];
-            if (!player) return null;
+            if (!player) {
+                // Handle case where player data is missing
+                return {
+                    id: playerId,
+                    name: `Player ${playerId}`,
+                    team: 'UNK',
+                    position: 'UNK',
+                    projection: 0,
+                    status: userRoster.starters.includes(playerId) ? 'starting' : 'bench',
+                    injury_status: null,
+                    news_updated: null
+                };
+            }
             
             // Check if player is starting
             const isStarting = userRoster.starters.includes(playerId);
@@ -421,14 +430,14 @@ class FantasyTracker {
             return {
                 id: playerId,
                 name: `${player.first_name} ${player.last_name}`,
-                team: player.team,
-                position: player.position,
+                team: player.team || 'UNK',
+                position: player.position || 'UNK',
                 projection: 0, // Sleeper doesn't provide projections in this endpoint
                 status: isStarting ? 'starting' : 'bench',
                 injury_status: player.injury_status,
                 news_updated: player.news_updated
             };
-        }).filter(player => player !== null);
+        });
 
         // Get current matchup data
         const currentMatchup = matchups.find(matchup => matchup.roster_id === userRoster.roster_id);
@@ -445,6 +454,24 @@ class FantasyTracker {
         };
     }
 
+    // Auto-load user data on page load
+    async autoLoadUserData() {
+        const username = 'jselles216'; // Your username
+        const loadingIndicator = document.getElementById('loading-indicator');
+        
+        try {
+            loadingIndicator.style.display = 'block';
+            this.showNotification('Loading your Sleeper leagues...', 'info');
+            await this.loadRealSleeperData(username);
+            this.showNotification('Successfully loaded your leagues!', 'success');
+        } catch (error) {
+            console.error('Error auto-loading user data:', error);
+            this.showNotification('Could not load your leagues automatically. You can try connecting manually.', 'error');
+        } finally {
+            loadingIndicator.style.display = 'none';
+        }
+    }
+
     // Example usage method
     async loadRealSleeperData(username) {
         try {
@@ -458,7 +485,7 @@ class FantasyTracker {
             const convertedTeams = [];
             for (const league of leagues) {
                 const leagueData = await this.getSleeperLeagueData(league.league_id);
-                const convertedTeam = this.convertSleeperDataToInternal(leagueData, playersData);
+                const convertedTeam = this.convertSleeperDataToInternal(leagueData, playersData, user.user_id);
                 if (convertedTeam) {
                     convertedTeams.push(convertedTeam);
                 }
@@ -467,11 +494,13 @@ class FantasyTracker {
             // Update the teams array
             this.teams = convertedTeams;
             this.updateDashboard();
+            this.updateLeagueSelector();
             
             return convertedTeams;
         } catch (error) {
             console.error('Error loading Sleeper data:', error);
             this.showNotification('Failed to load Sleeper data', 'error');
+            throw error;
         }
     }
 }

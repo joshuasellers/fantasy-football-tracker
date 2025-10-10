@@ -58,15 +58,17 @@
                         <input type="text" id="sleeper-username" placeholder="Enter your Sleeper username" value="jselles216" />
                         <button id="connect-sleeper" class="btn btn-primary">Connect to Sleeper</button>
                     </div>
-                    <p class="connection-note">Enter your Sleeper username to load real league data</p>
+                    <p class="connection-note">Your leagues will load automatically when the page loads</p>
+                    <div id="loading-indicator" class="loading-indicator" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading your leagues...
+                    </div>
                 </div>
                 <div class="league-selector">
                     <label for="league-select">Select League:</label>
                     <select id="league-select">
                         <option value="">Choose a league...</option>
-                        <option value="sleeper-1">Sleeper League 1</option>
-                        <option value="espn-1">ESPN League 1</option>
                     </select>
+                    <p class="platform-note">Currently supporting Sleeper leagues. ESPN integration coming soon!</p>
                 </div>
                 <div class="lineup-container" id="lineup-container">
                     <div class="lineup-card">
@@ -188,7 +190,7 @@
                             </div>
                         </div>
                         <div class="team-score-card">
-                            <h3>Team 2 (ESPN)</h3>
+                            <h3>Team 2 (Sleeper)</h3>
                             <div class="score-display">
                                 <span class="current-score">92.3</span>
                                 <span class="projected-score">Proj: 138.7</span>
@@ -256,7 +258,7 @@
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 Fantasy Football Roster Tracker. Built for Sleeper & ESPN leagues.</p>
+            <p>&copy; 2024 Fantasy Football Roster Tracker. Built for Sleeper leagues. ESPN integration coming soon!</p>
         </div>
     </footer>
 
