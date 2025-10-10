@@ -95,68 +95,38 @@ class FantasyTracker {
     }
 
     loadSampleData() {
-        // Sample team data (will be replaced by real Sleeper data)
-        this.teams = [
-            {
-                id: 'sleeper-1',
-                name: 'Sleeper League 1',
-                platform: 'Sleeper',
-                players: [
-                    { name: 'Josh Allen', team: 'BUF', position: 'QB', projection: 24.5, status: 'starting' },
-                    { name: 'Christian McCaffrey', team: 'SF', position: 'RB', projection: 18.2, status: 'starting' },
-                    { name: 'Tyreek Hill', team: 'MIA', position: 'WR', projection: 16.8, status: 'starting' },
-                    { name: 'Mike Evans', team: 'TB', position: 'WR', projection: 8.5, status: 'starting' },
-                    { name: 'Stefon Diggs', team: 'BUF', position: 'WR', projection: 12.3, status: 'bench' }
-                ],
-                currentScore: 87.5,
-                projectedScore: 142.3
-            }
-        ];
-
-        // Sample notifications
-        this.notifications = [
-            {
-                id: 1,
-                type: 'trade',
-                title: 'Trade Proposal',
-                message: 'You received a trade offer in Sleeper League 1',
-                time: '2 hours ago',
-                read: false
-            },
-            {
-                id: 2,
-                type: 'waiver',
-                title: 'Waiver Claim',
-                message: 'Your waiver claim for Tyler Lockett was successful',
-                time: '1 day ago',
-                read: false
-            },
-            {
-                id: 3,
-                type: 'injury',
-                title: 'Lineup Alert',
-                message: 'Player injury update: Check your starting lineup',
-                time: '3 hours ago',
-                read: false
-            }
-        ];
+        // Initialize with empty data - real data will be loaded from Sleeper API
+        this.teams = [];
+        this.notifications = [];
     }
 
     updateDashboard() {
         // Update active teams count
-        document.getElementById('active-teams').textContent = this.teams.length;
+        const activeTeamsElement = document.getElementById('active-teams');
+        if (activeTeamsElement) {
+            activeTeamsElement.textContent = this.teams.length > 0 ? this.teams.length : '-';
+        }
 
         // Calculate lineup alerts (players with low projections)
-        const lineupAlerts = this.calculateLineupAlerts();
-        document.getElementById('lineup-alerts').textContent = lineupAlerts;
+        const lineupAlertsElement = document.getElementById('lineup-alerts');
+        if (lineupAlertsElement) {
+            const lineupAlerts = this.teams.length > 0 ? this.calculateLineupAlerts() : 0;
+            lineupAlertsElement.textContent = lineupAlerts > 0 ? lineupAlerts : '-';
+        }
 
         // Update notifications count
-        const unreadNotifications = this.notifications.filter(n => !n.read).length;
-        document.getElementById('notifications-count').textContent = unreadNotifications;
+        const notificationsCountElement = document.getElementById('notifications-count');
+        if (notificationsCountElement) {
+            const unreadNotifications = this.notifications.length > 0 ? this.notifications.filter(n => !n.read).length : 0;
+            notificationsCountElement.textContent = unreadNotifications > 0 ? unreadNotifications : '-';
+        }
 
         // Find best projection
-        const bestProjection = this.findBestProjection();
-        document.getElementById('best-projection').textContent = bestProjection;
+        const bestProjectionElement = document.getElementById('best-projection');
+        if (bestProjectionElement) {
+            const bestProjection = this.teams.length > 0 ? this.findBestProjection() : 0;
+            bestProjectionElement.textContent = bestProjection > 0 ? bestProjection : '-';
+        }
 
         // Update recommendations
         this.updateRecommendations();
@@ -567,9 +537,33 @@ class FantasyTracker {
 
     updateLineupDisplay(team) {
         const container = document.getElementById('lineup-container');
+        if (!container) return;
+
         container.innerHTML = '';
 
+        if (!team || !team.players || team.players.length === 0) {
+            container.innerHTML = `
+                <div class="no-lineup-data">
+                    <i class="fas fa-users"></i>
+                    <h3>No Lineup Data</h3>
+                    <p>No player data available for this team</p>
+                </div>
+            `;
+            return;
+        }
+
         const startingPlayers = team.players.filter(p => p.status === 'starting');
+        
+        if (startingPlayers.length === 0) {
+            container.innerHTML = `
+                <div class="no-lineup-data">
+                    <i class="fas fa-users"></i>
+                    <h3>No Starting Lineup</h3>
+                    <p>No starting players found for this team</p>
+                </div>
+            `;
+            return;
+        }
         
         startingPlayers.forEach(player => {
             const lineupCard = document.createElement('div');
@@ -582,7 +576,7 @@ class FantasyTracker {
                         <span class="player-team">${player.team}</span>
                     </div>
                     <div class="player-stats">
-                        <span class="projection">Proj: ${player.projection}</span>
+                        <span class="projection">Proj: ${player.projection || '-'}</span>
                         <span class="status starting">Starting</span>
                     </div>
                 </div>

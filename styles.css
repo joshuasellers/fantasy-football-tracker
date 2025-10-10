@@ -707,6 +707,33 @@ body {
     line-height: 1.6;
 }
 
+.no-lineup-data {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 1px solid #dee2e6;
+    grid-column: 1 / -1;
+}
+
+.no-lineup-data i {
+    font-size: 3rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.no-lineup-data h3 {
+    color: #495057;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.no-lineup-data p {
+    color: #6c757d;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
 /* Footer */
 .footer {
     background: rgba(44, 62, 80, 0.9);
