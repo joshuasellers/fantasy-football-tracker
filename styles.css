@@ -551,6 +551,25 @@ body {
     color: #2c3e50;
 }
 
+.matchup-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #ecf0f1;
+    font-size: 0.85rem;
+    color: #7f8c8d;
+}
+
+.week-info {
+    font-weight: 600;
+}
+
+.opponent-info {
+    font-style: italic;
+}
+
 /* Notifications Styles */
 .notifications-list {
     display: flex;
@@ -602,6 +621,32 @@ body {
 .notification-actions {
     display: flex;
     gap: 0.5rem;
+}
+
+.no-notifications {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 1px solid #dee2e6;
+}
+
+.no-notifications i {
+    font-size: 3rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.no-notifications h3 {
+    color: #495057;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.no-notifications p {
+    color: #6c757d;
+    font-size: 1rem;
+    line-height: 1.6;
 }
 
 /* Footer */

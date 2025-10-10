@@ -5,6 +5,8 @@ class FantasyTracker {
         this.currentSection = 'dashboard';
         this.teams = [];
         this.notifications = [];
+        this.matchups = [];
+        this.transactions = [];
         this.init();
     }
 
@@ -269,6 +271,181 @@ class FantasyTracker {
         });
     }
 
+    updateScoringTab() {
+        const scoringGrid = document.querySelector('.scoring-grid');
+        if (!scoringGrid || !this.matchups || this.matchups.length === 0) return;
+
+        scoringGrid.innerHTML = '';
+
+        // Group matchups by league and create score cards
+        const matchupsByLeague = {};
+        this.matchups.forEach(matchup => {
+            const team = this.teams.find(t => t.roster_id === matchup.roster_id);
+            if (team) {
+                if (!matchupsByLeague[team.name]) {
+                    matchupsByLeague[team.name] = [];
+                }
+                matchupsByLeague[team.name].push({ matchup, team });
+            }
+        });
+
+        Object.entries(matchupsByLeague).forEach(([leagueName, leagueMatchups]) => {
+            leagueMatchups.forEach(({ matchup, team }) => {
+                const scoreCard = document.createElement('div');
+                scoreCard.className = 'team-score-card';
+                
+                // Calculate position scores
+                const positionScores = this.calculatePositionScores(matchup);
+                
+                scoreCard.innerHTML = `
+                    <h3>${team.name} (${leagueName})</h3>
+                    <div class="score-display">
+                        <span class="current-score">${matchup.points || 0}</span>
+                        <span class="projected-score">Proj: ${this.calculateProjectedScore(matchup)}</span>
+                    </div>
+                    <div class="score-breakdown">
+                        <div class="position-score">
+                            ${positionScores.map(pos => `<span>${pos.position}: ${pos.points}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="matchup-info">
+                        <span class="week-info">Week ${matchup.matchup_id || 'Current'}</span>
+                        <span class="opponent-info">vs ${this.getOpponentName(matchup, leagueMatchups)}</span>
+                    </div>
+                `;
+                scoringGrid.appendChild(scoreCard);
+            });
+        });
+    }
+
+    calculatePositionScores(matchup) {
+        // This would need player data to calculate actual position scores
+        // For now, return mock data based on matchup points
+        const totalPoints = matchup.points || 0;
+        return [
+            { position: 'QB', points: (totalPoints * 0.25).toFixed(1) },
+            { position: 'RB', points: (totalPoints * 0.3).toFixed(1) },
+            { position: 'WR', points: (totalPoints * 0.25).toFixed(1) },
+            { position: 'TE', points: (totalPoints * 0.1).toFixed(1) },
+            { position: 'K', points: (totalPoints * 0.05).toFixed(1) },
+            { position: 'DEF', points: (totalPoints * 0.05).toFixed(1) }
+        ];
+    }
+
+    calculateProjectedScore(matchup) {
+        // Sleeper doesn't provide projections in the matchup data
+        // This would need to be calculated from player projections
+        return ((matchup.points || 0) * 1.2).toFixed(1);
+    }
+
+    getOpponentName(matchup, leagueMatchups) {
+        // Find the opponent in the same matchup
+        const opponent = leagueMatchups.find(m => 
+            m.matchup.matchup_id === matchup.matchup_id && 
+            m.matchup.roster_id !== matchup.roster_id
+        );
+        return opponent ? opponent.team.name : 'TBD';
+    }
+
+    updateNotificationsTab() {
+        const notificationsList = document.querySelector('.notifications-list');
+        if (!notificationsList || !this.transactions || this.transactions.length === 0) return;
+
+        notificationsList.innerHTML = '';
+
+        // Process recent transactions into notifications
+        const recentTransactions = this.transactions
+            .filter(t => t.status === 'complete' || t.status === 'pending')
+            .slice(0, 10) // Show last 10 transactions
+            .sort((a, b) => new Date(b.created) - new Date(a.created));
+
+        if (recentTransactions.length === 0) {
+            notificationsList.innerHTML = `
+                <div class="no-notifications">
+                    <i class="fas fa-bell-slash"></i>
+                    <h3>No Recent Activity</h3>
+                    <p>No recent transactions or league updates to show.</p>
+                </div>
+            `;
+            return;
+        }
+
+        recentTransactions.forEach(transaction => {
+            const notification = document.createElement('div');
+            notification.className = 'notification-item';
+            
+            const notificationData = this.processTransactionToNotification(transaction);
+            
+            notification.innerHTML = `
+                <div class="notification-icon">
+                    <i class="${notificationData.icon}"></i>
+                </div>
+                <div class="notification-content">
+                    <h4>${notificationData.title}</h4>
+                    <p>${notificationData.message}</p>
+                    <span class="notification-time">${this.formatTimeAgo(transaction.created)}</span>
+                </div>
+                <div class="notification-actions">
+                    <button class="btn btn-sm btn-primary">View</button>
+                </div>
+            `;
+            notificationsList.appendChild(notification);
+        });
+    }
+
+    processTransactionToNotification(transaction) {
+        const timeAgo = this.formatTimeAgo(transaction.created);
+        
+        switch (transaction.type) {
+            case 'trade':
+                return {
+                    icon: 'fas fa-exchange-alt',
+                    title: 'Trade Completed',
+                    message: `Trade completed in ${transaction.leagueName}`,
+                    time: timeAgo
+                };
+            case 'waiver':
+                return {
+                    icon: 'fas fa-user-plus',
+                    title: 'Waiver Claim',
+                    message: `Waiver claim processed in ${transaction.leagueName}`,
+                    time: timeAgo
+                };
+            case 'free_agent':
+                return {
+                    icon: 'fas fa-user-plus',
+                    title: 'Free Agent Pickup',
+                    message: `Free agent pickup in ${transaction.leagueName}`,
+                    time: timeAgo
+                };
+            case 'drop':
+                return {
+                    icon: 'fas fa-user-minus',
+                    title: 'Player Dropped',
+                    message: `Player dropped in ${transaction.leagueName}`,
+                    time: timeAgo
+                };
+            default:
+                return {
+                    icon: 'fas fa-info-circle',
+                    title: 'League Update',
+                    message: `Activity in ${transaction.leagueName}`,
+                    time: timeAgo
+                };
+        }
+    }
+
+    formatTimeAgo(timestamp) {
+        const now = new Date();
+        const time = new Date(timestamp);
+        const diffInSeconds = Math.floor((now - time) / 1000);
+        
+        if (diffInSeconds < 60) return 'Just now';
+        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+        return `${Math.floor(diffInSeconds / 86400)} days ago`;
+    }
+
     findBestProjection() {
         let best = 0;
         this.teams.forEach(team => {
@@ -466,10 +643,21 @@ class FantasyTracker {
             const matchupsResponse = await fetch(`https://api.sleeper.app/v1/league/${leagueId}/matchups/${currentWeek}`);
             const matchups = await matchupsResponse.json();
             
-            return { league, rosters, users, matchups, currentWeek };
+            return { league, rosters, users, matchups, currentWeek, nflState };
         } catch (error) {
             console.error('Sleeper League Data Error:', error);
             throw error;
+        }
+    }
+
+    async getSleeperTransactions(leagueId) {
+        try {
+            const response = await fetch(`https://api.sleeper.app/v1/league/${leagueId}/transactions`);
+            const transactions = await response.json();
+            return transactions;
+        } catch (error) {
+            console.error('Sleeper Transactions Error:', error);
+            return [];
         }
     }
 
@@ -586,18 +774,31 @@ class FantasyTracker {
             
             // Process each league
             const convertedTeams = [];
+            const allMatchups = [];
+            const allTransactions = [];
+            
             for (const league of leagues) {
                 const leagueData = await this.getSleeperLeagueData(league.league_id);
                 const convertedTeam = this.convertSleeperDataToInternal(leagueData, playersData, user.user_id);
                 if (convertedTeam) {
                     convertedTeams.push(convertedTeam);
+                    allMatchups.push(...leagueData.matchups);
                 }
+                
+                // Get transactions for notifications
+                const transactions = await this.getSleeperTransactions(league.league_id);
+                allTransactions.push(...transactions.map(t => ({ ...t, leagueName: league.name })));
             }
             
             // Update the teams array
             this.teams = convertedTeams;
+            this.matchups = allMatchups;
+            this.transactions = allTransactions;
+            
             this.updateDashboard();
             this.updateLeagueSelector();
+            this.updateScoringTab();
+            this.updateNotificationsTab();
             
             return convertedTeams;
         } catch (error) {
