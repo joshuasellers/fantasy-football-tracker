@@ -146,6 +146,9 @@ class FantasyTracker {
         // Find best projection
         const bestProjection = this.findBestProjection();
         document.getElementById('best-projection').textContent = bestProjection;
+
+        // Update recommendations
+        this.updateRecommendations();
     }
 
     calculateLineupAlerts() {
@@ -162,6 +165,108 @@ class FantasyTracker {
             });
         });
         return alerts;
+    }
+
+    generateRecommendations() {
+        const recommendations = [];
+        
+        this.teams.forEach(team => {
+            const startingPlayers = team.players.filter(p => p.status === 'starting');
+            const benchPlayers = team.players.filter(p => p.status === 'bench');
+            
+            startingPlayers.forEach(starter => {
+                const betterBenchOption = benchPlayers.find(bench => bench.projection > starter.projection);
+                if (betterBenchOption) {
+                    recommendations.push({
+                        teamId: team.id,
+                        teamName: team.name,
+                        platform: team.platform,
+                        starter: starter,
+                        benchOption: betterBenchOption,
+                        priority: this.calculatePriority(starter.projection, betterBenchOption.projection)
+                    });
+                }
+            });
+        });
+        
+        return recommendations.sort((a, b) => b.priority.value - a.priority.value);
+    }
+
+    calculatePriority(starterProjection, benchProjection) {
+        const difference = benchProjection - starterProjection;
+        if (difference >= 5) return { level: 'High', value: 3 };
+        if (difference >= 2) return { level: 'Medium', value: 2 };
+        return { level: 'Low', value: 1 };
+    }
+
+    updateRecommendations() {
+        const recommendations = this.generateRecommendations();
+        const container = document.getElementById('recommendations-container');
+        
+        // Clear existing recommendations
+        container.innerHTML = '';
+        
+        if (recommendations.length === 0) {
+            container.innerHTML = `
+                <div class="no-recommendations">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>No Recommendations</h3>
+                    <p>Your lineups look optimal! All your starting players have better projections than your bench options.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        recommendations.forEach(rec => {
+            const recCard = document.createElement('div');
+            recCard.className = 'recommendation-card';
+            recCard.innerHTML = `
+                <div class="recommendation-header">
+                    <h3><i class="fas fa-arrow-down"></i> Consider Benching</h3>
+                    <span class="alert-badge">${rec.priority.level} Priority</span>
+                </div>
+                <div class="recommendation-context">
+                    <span class="league-info"><i class="fas fa-trophy"></i> ${rec.teamName}</span>
+                    <span class="team-info"><i class="fas fa-users"></i> ${rec.platform}</span>
+                </div>
+                <div class="player-comparison">
+                    <div class="current-starter">
+                        <h4>Currently Starting</h4>
+                        <div class="player-card">
+                            <div class="player-info">
+                                <span class="player-name">${rec.starter.name}</span>
+                                <span class="player-team">${rec.starter.team}</span>
+                            </div>
+                            <div class="player-stats">
+                                <span class="projection">Proj: ${rec.starter.projection}</span>
+                                <span class="status starting">Starting</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="vs-divider">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                    <div class="bench-option">
+                        <h4>Better Option on Bench</h4>
+                        <div class="player-card">
+                            <div class="player-info">
+                                <span class="player-name">${rec.benchOption.name}</span>
+                                <span class="player-team">${rec.benchOption.team}</span>
+                            </div>
+                            <div class="player-stats">
+                                <span class="projection">Proj: ${rec.benchOption.projection}</span>
+                                <span class="status bench">On Bench</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="recommendation-actions">
+                    <button class="btn btn-primary" data-starter="${rec.starter.name}" data-bench="${rec.benchOption.name}" data-team="${rec.teamId}">Make Swap</button>
+                    <button class="btn btn-secondary" data-rec-id="${rec.teamId}-${rec.starter.name}">Dismiss</button>
+                </div>
+            `;
+            container.appendChild(recCard);
+        });
     }
 
     findBestProjection() {
@@ -212,29 +317,27 @@ class FantasyTracker {
     }
 
     handlePlayerSwap(button) {
-        const recommendationCard = button.closest('.recommendation-card');
-        const starterName = recommendationCard.querySelector('.current-starter .player-name').textContent;
-        const benchName = recommendationCard.querySelector('.bench-option .player-name').textContent;
+        const starterName = button.dataset.starter;
+        const benchName = button.dataset.bench;
+        const teamId = button.dataset.team;
 
-        // Simulate swap
-        this.teams.forEach(team => {
+        // Find the specific team and make the swap
+        const team = this.teams.find(t => t.id === teamId);
+        if (team) {
             const starter = team.players.find(p => p.name === starterName);
             const bench = team.players.find(p => p.name === benchName);
             
             if (starter && bench) {
                 starter.status = 'bench';
                 bench.status = 'starting';
+                
+                // Show success message with team context
+                this.showNotification(`Player swap completed in ${team.name}!`, 'success');
+                
+                // Update dashboard and recommendations
+                this.updateDashboard();
             }
-        });
-
-        // Show success message
-        this.showNotification('Player swap completed!', 'success');
-        
-        // Remove recommendation card
-        recommendationCard.remove();
-        
-        // Update dashboard
-        this.updateDashboard();
+        }
     }
 
     dismissRecommendation(button) {

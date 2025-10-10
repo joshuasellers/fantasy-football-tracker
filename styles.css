@@ -357,6 +357,57 @@ body {
     font-weight: 600;
 }
 
+.recommendation-context {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    border: 1px solid #ffeaa7;
+}
+
+.league-info,
+.team-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #856404;
+    font-weight: 500;
+}
+
+.league-info i,
+.team-info i {
+    color: #f39c12;
+}
+
+.no-recommendations {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: #d5f4e6;
+    border-radius: 12px;
+    border: 1px solid #27ae60;
+}
+
+.no-recommendations i {
+    font-size: 3rem;
+    color: #27ae60;
+    margin-bottom: 1rem;
+}
+
+.no-recommendations h3 {
+    color: #27ae60;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.no-recommendations p {
+    color: #2c3e50;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
 .player-comparison {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
