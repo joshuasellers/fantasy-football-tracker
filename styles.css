@@ -482,6 +482,37 @@ body {
     border-bottom: 2px solid #ecf0f1;
 }
 
+.week-selector {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.week-selector label {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.week-selector select {
+    padding: 0.5rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    font-size: 1rem;
+    min-width: 150px;
+}
+
+.week-selector select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
 .tab-btn {
     background: transparent;
     border: none;
@@ -649,6 +680,33 @@ body {
     line-height: 1.6;
 }
 
+.no-scoring-data {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 1px solid #dee2e6;
+    grid-column: 1 / -1;
+}
+
+.no-scoring-data i {
+    font-size: 3rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.no-scoring-data h3 {
+    color: #495057;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.no-scoring-data p {
+    color: #6c757d;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
 /* Footer */
 .footer {
     background: rgba(44, 62, 80, 0.9);
@@ -707,5 +765,15 @@ body {
     
     .connection-form input {
         margin-bottom: 1rem;
+    }
+    
+    .week-selector {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+    
+    .week-selector select {
+        margin-bottom: 0.5rem;
     }
 }

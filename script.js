@@ -7,6 +7,8 @@ class FantasyTracker {
         this.notifications = [];
         this.matchups = [];
         this.transactions = [];
+        this.currentWeek = 1;
+        this.allWeeksData = {};
         this.init();
     }
 
@@ -47,7 +49,14 @@ class FantasyTracker {
                 this.dismissRecommendation(e.target);
             } else if (e.target.id === 'connect-sleeper') {
                 this.handleSleeperConnection();
+            } else if (e.target.id === 'refresh-week') {
+                this.refreshWeekData();
             }
+        });
+
+        // Week selector
+        document.getElementById('week-select').addEventListener('change', (e) => {
+            this.loadWeekData(e.target.value);
         });
     }
 
@@ -271,9 +280,93 @@ class FantasyTracker {
         });
     }
 
+    updateWeekSelector() {
+        const weekSelect = document.getElementById('week-select');
+        if (!weekSelect) return;
+
+        // Clear existing options
+        weekSelect.innerHTML = '<option value="">Choose a week...</option>';
+
+        // Add weeks 1-18 (typical NFL season)
+        for (let week = 1; week <= 18; week++) {
+            const option = document.createElement('option');
+            option.value = week;
+            option.textContent = `Week ${week}`;
+            if (week === this.currentWeek) {
+                option.textContent += ' (Current)';
+                option.selected = true;
+            }
+            weekSelect.appendChild(option);
+        }
+    }
+
+    async loadWeekData(week) {
+        if (!week || week === this.currentWeek) {
+            this.updateScoringTab();
+            return;
+        }
+
+        try {
+            this.showNotification(`Loading Week ${week} data...`, 'info');
+            
+            // Check if we already have this week's data
+            if (this.allWeeksData[week]) {
+                this.matchups = this.allWeeksData[week];
+                this.updateScoringTab();
+                return;
+            }
+
+            // Fetch new week data
+            const weekMatchups = [];
+            for (const team of this.teams) {
+                const leagueId = team.id;
+                try {
+                    const matchupsResponse = await fetch(`https://api.sleeper.app/v1/league/${leagueId}/matchups/${week}`);
+                    const matchups = await matchupsResponse.json();
+                    weekMatchups.push(...matchups);
+                } catch (error) {
+                    console.error(`Error fetching week ${week} data for league ${leagueId}:`, error);
+                }
+            }
+
+            // Store the data
+            this.allWeeksData[week] = weekMatchups;
+            this.matchups = weekMatchups;
+            this.updateScoringTab();
+            
+            this.showNotification(`Week ${week} data loaded!`, 'success');
+        } catch (error) {
+            console.error('Error loading week data:', error);
+            this.showNotification('Failed to load week data', 'error');
+        }
+    }
+
+    async refreshWeekData() {
+        const selectedWeek = document.getElementById('week-select').value;
+        if (selectedWeek) {
+            // Clear cached data for this week
+            delete this.allWeeksData[selectedWeek];
+            await this.loadWeekData(selectedWeek);
+        } else {
+            // Refresh current week
+            await this.loadWeekData(this.currentWeek);
+        }
+    }
+
     updateScoringTab() {
         const scoringGrid = document.querySelector('.scoring-grid');
-        if (!scoringGrid || !this.matchups || this.matchups.length === 0) return;
+        if (!scoringGrid || !this.matchups || this.matchups.length === 0) {
+            if (scoringGrid) {
+                scoringGrid.innerHTML = `
+                    <div class="no-scoring-data">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>No Scoring Data</h3>
+                        <p>No matchup data available for the selected week.</p>
+                    </div>
+                `;
+            }
+            return;
+        }
 
         scoringGrid.innerHTML = '';
 
@@ -309,13 +402,18 @@ class FantasyTracker {
                         </div>
                     </div>
                     <div class="matchup-info">
-                        <span class="week-info">Week ${matchup.matchup_id || 'Current'}</span>
+                        <span class="week-info">Week ${matchup.matchup_id || this.getSelectedWeek()}</span>
                         <span class="opponent-info">vs ${this.getOpponentName(matchup, leagueMatchups)}</span>
                     </div>
                 `;
                 scoringGrid.appendChild(scoreCard);
             });
         });
+    }
+
+    getSelectedWeek() {
+        const weekSelect = document.getElementById('week-select');
+        return weekSelect ? weekSelect.value || this.currentWeek : this.currentWeek;
     }
 
     calculatePositionScores(matchup) {
@@ -795,8 +893,12 @@ class FantasyTracker {
             this.matchups = allMatchups;
             this.transactions = allTransactions;
             
+            // Store current week data
+            this.allWeeksData[this.currentWeek] = allMatchups;
+            
             this.updateDashboard();
             this.updateLeagueSelector();
+            this.updateWeekSelector();
             this.updateScoringTab();
             this.updateNotificationsTab();
             
