@@ -1,6 +1,6 @@
-# Fantasy Football Roster Tracker
+# Fantasy Football Roster Tracker (React)
 
-A comprehensive web application to help you track and manage your fantasy football rosters across multiple leagues and platforms.
+A comprehensive React application to help you track and manage your fantasy football rosters across multiple leagues and platforms.
 
 ## Features
 
@@ -17,20 +17,41 @@ A comprehensive web application to help you track and manage your fantasy footba
 
 ### 📈 Live Scoring & Notifications
 - Real-time scoring updates for all your teams
+- Week-by-week matchup viewing
 - League notifications and alerts
 - Trade proposals, waiver claims, and injury updates
 
-### 📱 Responsive Design
-- Modern, mobile-friendly interface
-- Beautiful gradient backgrounds and smooth animations
-- Intuitive navigation between sections
+### 📱 Modern React Architecture
+- Component-based architecture
+- React Router for navigation
+- Custom hooks for data management
+- Responsive design with modern CSS
 
 ## Getting Started
 
-1. **Clone or Download** this repository to your local machine
-2. **Open** `index.html` in your web browser
-3. **Connect to Sleeper**: Enter your Sleeper username in the "Starting Lineups" section
-4. **Navigate** through the different sections using the top navigation
+### Prerequisites
+- Node.js (v14 or higher)
+- npm or yarn
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd fantasy-football-tracker
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server**
+   ```bash
+   npm start
+   ```
+
+4. **Open your browser** and navigate to `http://localhost:3000`
 
 ### Using with Real Sleeper Data
 
@@ -39,36 +60,59 @@ A comprehensive web application to help you track and manage your fantasy footba
 3. **Select League**: Choose from your loaded leagues in the dropdown to view your actual roster
 4. **Real-time Data**: All player information, lineups, and scores are pulled directly from Sleeper
 
-## File Structure
+## Project Structure
 
 ```
 fantasy-football-tracker/
-├── index.html          # Main HTML file
-├── styles.css          # CSS styling and responsive design
-├── script.js           # JavaScript functionality
-└── README.md           # This file
+├── public/
+│   └── index.html              # HTML template
+├── src/
+│   ├── components/             # React components
+│   │   ├── Dashboard.js        # Dashboard overview
+│   │   ├── Lineups.js          # Starting lineups
+│   │   ├── Recommendations.js  # Bench recommendations
+│   │   └── Scoring.js          # Live scoring & notifications
+│   ├── hooks/                  # Custom React hooks
+│   │   └── useSleeperData.js   # Sleeper API data management
+│   ├── services/               # API services
+│   │   └── sleeperApi.js       # Sleeper API integration
+│   ├── styles/                 # CSS styles
+│   │   └── App.css             # Main application styles
+│   ├── App.js                  # Main App component
+│   └── index.js                # Application entry point
+├── package.json                # Dependencies and scripts
+└── README.md                   # This file
 ```
+
+## Available Scripts
+
+- `npm start` - Runs the app in development mode
+- `npm build` - Builds the app for production
+- `npm test` - Launches the test runner
+- `npm eject` - Ejects from Create React App (one-way operation)
 
 ## Current Status
 
-This application includes:
+This React application includes:
 
-- ✅ Complete UI/UX design
-- ✅ Interactive navigation and sections
+- ✅ **React 18** with modern hooks and components
+- ✅ **React Router** for navigation
+- ✅ **Custom Hooks** for data management
 - ✅ **Sleeper API Integration** - *Fully Implemented*
-- ✅ Sample data for demonstration
-- ✅ Responsive design for all devices
+- ✅ **Responsive Design** for all devices
+- ✅ **Component Architecture** for maintainability
 - 🔄 **ESPN API Integration** - *Coming Soon*
 
-## API Integration Roadmap
+## API Integration
 
 ### Sleeper API ✅ COMPLETED
 - ✅ User authentication via username
-- ✅ League data fetching
+- ✅ League data fetching with React hooks
 - ✅ Real-time roster updates
 - ✅ Live scoring integration
 - ✅ Player data mapping
 - ✅ Matchup data retrieval
+- ✅ Week-by-week data caching
 
 ### ESPN API (Coming Soon)
 - League connection
@@ -77,13 +121,23 @@ This application includes:
 - Notification system
 - Multi-platform roster management
 
-## Customization
+## Key React Features
 
-You can easily customize the application by:
+### Custom Hooks
+- `useSleeperData` - Manages all Sleeper API data and state
+- Automatic data loading and caching
+- Error handling and loading states
 
-1. **Modifying sample data** in `script.js` (loadSampleData function)
-2. **Updating styling** in `styles.css`
-3. **Adding new features** by extending the FantasyTracker class
+### Component Architecture
+- **Dashboard** - Overview of all teams and stats
+- **Lineups** - Starting lineup management
+- **Recommendations** - Bench optimization suggestions
+- **Scoring** - Live scoring and notifications
+
+### State Management
+- React hooks for local state
+- Custom hook for global data management
+- Efficient re-rendering with proper dependencies
 
 ## Browser Support
 
@@ -102,4 +156,4 @@ This project is open source and available under the MIT License.
 
 ---
 
-**Built with ❤️ for fantasy football enthusiasts**
+**Built with ❤️ and React for fantasy football enthusiasts**
