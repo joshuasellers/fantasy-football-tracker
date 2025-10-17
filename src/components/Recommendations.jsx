@@ -16,7 +16,7 @@ function Recommendations({ teams, loading }) {
           recommendations.push({
             id: `${team.id}-${starter.name}`,
             teamId: team.id,
-            teamName: team.name,
+            teamName: team.team_name,
             platform: team.platform,
             starter: starter,
             benchOption: betterBenchOption,

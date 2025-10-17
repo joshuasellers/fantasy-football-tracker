@@ -162,5 +162,5 @@ This project is open source and available under the MIT License.
 ---
 
 TODO:
-- team names is league names
-- all players projects are 0
+- fix scoring page with multiple teams of same name
+- all players projections are 0

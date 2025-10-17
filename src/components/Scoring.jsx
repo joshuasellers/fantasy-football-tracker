@@ -29,7 +29,7 @@ function Scoring({ teams, matchups, transactions, currentWeek, loading }) {
       m.matchup.matchup_id === matchup.matchup_id && 
       m.matchup.roster_id !== matchup.roster_id
     );
-    return opponent ? opponent.team.name : 'TBD';
+    return opponent ? opponent.team.team_name : 'TBD';
   };
 
   const renderScoringTab = () => {
@@ -48,10 +48,10 @@ function Scoring({ teams, matchups, transactions, currentWeek, loading }) {
     matchups.forEach(matchup => {
       const team = teams.find(t => t.roster_id === matchup.roster_id);
       if (team) {
-        if (!matchupsByLeague[team.name]) {
-          matchupsByLeague[team.name] = [];
+        if (!matchupsByLeague[team.league_name]) {
+          matchupsByLeague[team.league_name] = [];
         }
-        matchupsByLeague[team.name].push({ matchup, team });
+        matchupsByLeague[team.league_name].push({ matchup, team });
       }
     });
 
@@ -61,7 +61,7 @@ function Scoring({ teams, matchups, transactions, currentWeek, loading }) {
         
         return (
           <div key={`${team.id}-${matchup.roster_id}`} className="team-score-card">
-            <h3>{team.name} ({leagueName})</h3>
+            <h3>{team.team_name} ({leagueName})</h3>
             <div className="score-display">
               <span className="current-score">{matchup.points || 0}</span>
               <span className="projected-score">Proj: {calculateProjectedScore(matchup)}</span>

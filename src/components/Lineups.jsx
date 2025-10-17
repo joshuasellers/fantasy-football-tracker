@@ -99,7 +99,7 @@ function Lineups({ teams, loading, onLoadUserData }) {
           <option value="">Choose a league...</option>
           {teams.map(team => (
             <option key={team.id} value={team.id}>
-              {team.name} ({team.platform}) - {team.players.length} players
+              {team.league_name} ({team.platform}) - {team.players.length} players
             </option>
           ))}
         </select>

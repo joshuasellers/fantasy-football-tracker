@@ -189,7 +189,8 @@ function convertSleeperDataToInternal(sleeperData, playersData, userId) {
   
   return {
     id: league.league_id,
-    name: league.name,
+    league_name: league.name,
+    team_name: userInfo.metadata.team_name,
     platform: 'Sleeper',
     players: convertedPlayers,
     currentScore: currentMatchup ? currentMatchup.points : 0,
