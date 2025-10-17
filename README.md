@@ -157,3 +157,10 @@ This project is open source and available under the MIT License.
 ---
 
 **Built with ❤️ and React for fantasy football enthusiasts**
+
+
+---
+
+TODO:
+- team names is league names
+- all players projects are 0

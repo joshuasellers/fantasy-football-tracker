@@ -1,7 +1,7 @@
 import React from 'react';
 
 function Dashboard({ teams, notifications, loading }) {
-  const calculateLineupAlerts = () => {
+  const calculatePotentialSubstitutions = () => {
     let alerts = 0;
     teams.forEach(team => {
       const startingPlayers = team.players.filter(p => p.status === 'starting');
@@ -31,7 +31,7 @@ function Dashboard({ teams, notifications, loading }) {
 
   const getDisplayValue = (value, fallback = '-') => {
     if (loading) return fallback;
-    return value > 0 ? value : fallback;
+    return value >= 0 ? value : fallback;
   };
 
   const dashboardCards = [
@@ -43,10 +43,10 @@ function Dashboard({ teams, notifications, loading }) {
       description: 'Teams across all leagues'
     },
     {
-      id: 'lineup-alerts',
-      title: 'Lineup Alerts',
+      id: 'substitution-alerts',
+      title: 'Substitution Alerts',
       icon: 'fas fa-exclamation-triangle',
-      value: getDisplayValue(calculateLineupAlerts()),
+      value: getDisplayValue(calculatePotentialSubstitutions()),
       description: 'Players to consider benching'
     },
     {
@@ -67,7 +67,7 @@ function Dashboard({ teams, notifications, loading }) {
 
   return (
     <section className="section active">
-      <h2>Dashboard Overview</h2>
+      <h2>Dashboard</h2>
       <div className="dashboard-grid">
         {dashboardCards.map(card => (
           <div key={card.id} className="dashboard-card">
