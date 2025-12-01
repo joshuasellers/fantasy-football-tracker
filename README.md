@@ -163,4 +163,5 @@ This project is open source and available under the MIT License.
 
 TODO:
 - fix scoring page with multiple teams of same name
+  - this is because there is some issue with how the matchup data is being setup from the API (TODO)
 - all players projections are 0
