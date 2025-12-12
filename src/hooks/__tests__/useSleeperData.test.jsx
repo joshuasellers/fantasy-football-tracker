@@ -86,6 +86,8 @@ describe('useSleeperData', () => {
     expect(result.current.currentWeek).toBe(5);
     expect(result.current.teams.length).toBeGreaterThan(0);
     expect(result.current.matchups.length).toBeGreaterThan(0);
+    expect(result.current.teams[0].leagueId).toBe('1');
+    expect(result.current.matchups[0].leagueId).toBe('1');
     expect(result.current.transactions.length).toBeGreaterThan(0);
   });
 

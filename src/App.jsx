@@ -13,6 +13,8 @@ import { useSleeperData } from './hooks/useSleeperData';
 
 function App() {
   const [currentSection, setCurrentSection] = useState('dashboard');
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [username, setUsername] = useState('jselles216');
   const { 
     teams, 
     matchups, 
@@ -28,6 +30,23 @@ function App() {
     // Auto-load user data on app start
     loadUserData('jselles216');
   }, [loadUserData]);
+
+  const handleFloatingConnect = async () => {
+    const input = window.prompt('Enter your Sleeper username', username);
+    if (input === null) return; // cancelled
+    const trimmed = input.trim();
+    if (!trimmed) return;
+
+    setUsername(trimmed);
+    setIsConnecting(true);
+    try {
+      await loadUserData(trimmed);
+    } catch (e) {
+      console.error('Floating connect failed:', e);
+    } finally {
+      setIsConnecting(false);
+    }
+  };
 
   const sections = [
     { id: 'dashboard', label: 'Dashboard', icon: 'fas fa-tachometer-alt' },
@@ -80,6 +99,15 @@ function App() {
             </Routes>
           </div>
         </main>
+
+        <button 
+          className="floating-connect-button"
+          onClick={handleFloatingConnect}
+          disabled={isConnecting}
+        >
+          <i className="fas fa-plug"></i>
+          {isConnecting ? 'Connecting...' : 'Connect to Sleeper'}
+        </button>
 
         <Footer />
       </div>

@@ -50,6 +50,11 @@ export function useSleeperData() {
             SleeperApiService.getLeagueTransactions(league.league_id)
           ]);
 
+          const matchupsWithLeague = currentMatchups.map(matchup => ({
+            ...matchup,
+            leagueId: league.league_id
+          }));
+
           // Convert to internal format
           const convertedTeam = convertSleeperDataToInternal(
             { league: leagueData, rosters, users, matchups: currentMatchups },
@@ -59,7 +64,7 @@ export function useSleeperData() {
 
           if (convertedTeam) {
             convertedTeams.push(convertedTeam);
-            allMatchups.push(...currentMatchups);
+            allMatchups.push(...matchupsWithLeague);
           }
 
           // Add transactions with league context
@@ -109,7 +114,11 @@ export function useSleeperData() {
       for (const team of teams) {
         try {
           const matchups = await SleeperApiService.getLeagueMatchups(team.id, week);
-          weekMatchups.push(...matchups);
+          const matchupsWithLeague = matchups.map(matchup => ({
+            ...matchup,
+            leagueId: team.leagueId || team.id
+          }));
+          weekMatchups.push(...matchupsWithLeague);
         } catch (error) {
           console.error(`Error fetching week ${week} data for league ${team.id}:`, error);
         }
@@ -189,6 +198,7 @@ function convertSleeperDataToInternal(sleeperData, playersData, userId) {
   
   return {
     id: league.league_id,
+    leagueId: league.league_id,
     league_name: league.name,
     team_name: userInfo.metadata.team_name,
     platform: 'Sleeper',

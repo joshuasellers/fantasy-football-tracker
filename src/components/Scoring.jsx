@@ -43,25 +43,30 @@ function Scoring({ teams, matchups, transactions, currentWeek, loading }) {
       );
     }
 
-    // Group matchups by league
+    // Group matchups by league, matching both roster_id and leagueId to avoid collisions
     const matchupsByLeague = {};
     matchups.forEach(matchup => {
-      const team = teams.find(t => t.roster_id === matchup.roster_id);
+      const team = teams.find(t => 
+        t.roster_id === matchup.roster_id && 
+        (!matchup.leagueId || t.leagueId === matchup.leagueId || t.id === matchup.leagueId)
+      );
       if (team) {
-        if (!matchupsByLeague[team.league_name]) {
-          matchupsByLeague[team.league_name] = [];
+        const leagueKey = matchup.leagueId || team.leagueId || team.id;
+        if (!matchupsByLeague[leagueKey]) {
+          matchupsByLeague[leagueKey] = { name: team.league_name, entries: [] };
         }
-        matchupsByLeague[team.league_name].push({ matchup, team });
+        matchupsByLeague[leagueKey].entries.push({ matchup, team });
       }
     });
 
-    return Object.entries(matchupsByLeague).map(([leagueName, leagueMatchups]) =>
-      leagueMatchups.map(({ matchup, team }) => {
+    return Object.entries(matchupsByLeague).map(([leagueKey, leagueData]) =>
+      leagueData.entries.map(({ matchup, team }) => {
+        const leagueMatchups = leagueData.entries;
         const positionScores = calculatePositionScores(matchup);
         
         return (
-          <div key={`${team.id}-${matchup.roster_id}`} className="team-score-card">
-            <h3>{team.team_name} ({leagueName})</h3>
+          <div key={`${leagueKey}-${matchup.roster_id}`} className="team-score-card">
+            <h3>{team.team_name} ({leagueData.name})</h3>
             <div className="score-display">
               <span className="current-score">{matchup.points || 0}</span>
               <span className="projected-score">Proj: {calculateProjectedScore(matchup)}</span>

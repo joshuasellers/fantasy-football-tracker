@@ -1,22 +1,7 @@
 import React, { useState } from 'react';
 
-function Lineups({ teams, loading, onLoadUserData }) {
+function Lineups({ teams, loading }) {
   const [selectedLeague, setSelectedLeague] = useState('');
-  const [username, setUsername] = useState('jselles216');
-  const [isConnecting, setIsConnecting] = useState(false);
-
-  const handleConnect = async () => {
-    if (!username.trim()) return;
-    
-    setIsConnecting(true);
-    try {
-      await onLoadUserData(username);
-    } catch (error) {
-      console.error('Connection failed:', error);
-    } finally {
-      setIsConnecting(false);
-    }
-  };
 
   const selectedTeam = teams.find(team => team.id === selectedLeague);
 
@@ -66,22 +51,10 @@ function Lineups({ teams, loading, onLoadUserData }) {
       
       <div className="api-connection">
         <h3>Connect to Sleeper</h3>
-        <div className="connection-form">
-          <input 
-            type="text" 
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Enter your Sleeper username" 
-          />
-          <button 
-            onClick={handleConnect}
-            disabled={isConnecting}
-            className="btn btn-primary"
-          >
-            {isConnecting ? 'Connecting...' : 'Connect to Sleeper'}
-          </button>
-        </div>
-        <p className="connection-note">Your leagues will load automatically when the page loads</p>
+        <p className="connection-note">
+          Use the floating “Connect to Sleeper” button (bottom right) to refresh your leagues.
+          Leagues also load automatically when the app starts.
+        </p>
         {loading && (
           <div className="loading-indicator">
             <i className="fas fa-spinner fa-spin"></i> Loading your leagues...

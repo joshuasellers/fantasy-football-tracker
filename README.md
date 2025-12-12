@@ -139,6 +139,13 @@ This React application includes:
 - Custom hook for global data management
 - Efficient re-rendering with proper dependencies
 
+## Planned Improvements
+- Migrate to a Node backend script to periodically fetch and refresh league data without relying on a manual “Connect to Sleeper” action.
+
+### Open Bugs
+- Player projections are currently always 0; investigate and correct projection sourcing.
+- Scoring page can mis-attribute teams when roster IDs are reused across leagues; continue monitoring after recent fixes.
+
 ## Browser Support
 
 - Chrome (recommended)
@@ -157,12 +164,3 @@ This project is open source and available under the MIT License.
 ---
 
 **Built with ❤️ and React for fantasy football enthusiasts**
-
-
----
-
-TODO:
-- fix scoring page with multiple teams of same name
-  - scoring.jsx line 48: why do all the league matchups have my team name?
-   - maybe because only checking roster id and not also league id  
-- all players projections are 0
