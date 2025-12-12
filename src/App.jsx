@@ -7,6 +7,7 @@ import Dashboard from './components/Dashboard';
 import Lineups from './components/Lineups';
 import Recommendations from './components/Recommendations';
 import Scoring from './components/Scoring';
+import Updates from './components/Updates';
 
 // Services
 import { useSleeperData } from './hooks/useSleeperData';
@@ -52,7 +53,8 @@ function App() {
     { id: 'dashboard', label: 'Dashboard', icon: 'fas fa-tachometer-alt' },
     { id: 'lineups', label: 'Starting Lineups', icon: 'fas fa-users' },
     { id: 'recommendations', label: 'Bench Recommendations', icon: 'fas fa-lightbulb' },
-    { id: 'scoring', label: 'Scoring & Notifications', icon: 'fas fa-chart-line' }
+    { id: 'scoring', label: 'Scoring & Notifications', icon: 'fas fa-chart-line' },
+    { id: 'updates', label: 'Updates', icon: 'fas fa-info-circle' }
   ];
 
   return (
@@ -95,6 +97,9 @@ function App() {
                   currentWeek={currentWeek}
                   loading={loading}
                 />
+              } />
+              <Route path="/updates" element={
+                <Updates />
               } />
             </Routes>
           </div>

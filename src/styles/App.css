@@ -325,6 +325,39 @@ body {
     font-style: italic;
 }
 
+.updates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.updates-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(79, 140, 255, 0.25);
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.updates-card h3 {
+    color: #f7fafc;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+}
+
+.updates-card ul {
+    list-style: disc;
+    padding-left: 1.25rem;
+    color: #cbd5f5;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    line-height: 1.5;
+}
+
 .recommendations-container {
     display: flex;
     flex-direction: column;
