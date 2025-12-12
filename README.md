@@ -163,8 +163,6 @@ This project is open source and available under the MIT License.
 
 TODO:
 - fix scoring page with multiple teams of same name
-  - this is because there is some issue with how the matchup data is being setup from the API (TODO)
-  - const currentMatchup = matchups.find(matchup => matchup.roster_id === userRoster.roster_id);
-   - useSleeperData
-- scoring.jsx line 60: why do all the league matchups have my team name?
+  - scoring.jsx line 48: why do all the league matchups have my team name?
+   - maybe because only checking roster id and not also league id  
 - all players projections are 0
