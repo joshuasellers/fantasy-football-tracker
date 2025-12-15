@@ -150,7 +150,6 @@ This React application includes:
 - calculatePositionScores
 - calculatePositionScores
 
-
 ## Browser Support
 
 - Chrome (recommended)

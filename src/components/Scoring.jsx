@@ -20,10 +20,6 @@ function Scoring({ teams, allTeams, matchups, currentWeek, loading }) {
     ];
   };
 
-  const calculateProjectedScore = (matchup) => {
-    return ((matchup.points || 0) * 1.2).toFixed(1);
-  };
-
   const getOpponentName = (matchup) => {
     const opponentMatchup = matchups.find(m => 
       m.matchup_id === matchup.matchup_id && 
@@ -77,7 +73,6 @@ function Scoring({ teams, allTeams, matchups, currentWeek, loading }) {
             <h3>{team.team_name} ({leagueData.name})</h3>
             <div className="score-display">
               <span className="current-score">{matchup.points || 0}</span>
-              <span className="projected-score">Proj: {calculateProjectedScore(matchup)}</span>
             </div>
             <div className="score-breakdown">
               <div className="position-score">
