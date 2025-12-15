@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import './styles/ExpandableSection.css';
 
 function Scoring({ teams, allTeams, matchups, currentWeek, loading }) {
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
   const [activeTab, setActiveTab] = useState('live-scoring');
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const toggleExpansion = () => {
+    setIsExpanded(!isExpanded);
+  };
 
   useEffect(() => {
     setSelectedWeek(currentWeek);
@@ -74,11 +80,16 @@ function Scoring({ teams, allTeams, matchups, currentWeek, loading }) {
             <div className="score-display">
               <span className="current-score">{matchup.points || 0}</span>
             </div>
-            <div className="score-breakdown">
-              <div className="position-score">
-                {positionScores.map(pos => (
-                  <span key={pos.position}>{pos.position}: {pos.points}</span>
-                ))}
+            <button className="expandable-header" onClick={toggleExpansion}>
+              <i className={`fas ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+            </button>
+            <div className={`expandable-content ${isExpanded ? 'opened' : ''}`}>
+              <div className="score-breakdown">
+                <div className="position-score">
+                  {positionScores.map(pos => (
+                    <span key={pos.position}>{pos.position}: {pos.points}</span>
+                  ))}
+                </div>
               </div>
             </div>
             <div className="matchup-info">

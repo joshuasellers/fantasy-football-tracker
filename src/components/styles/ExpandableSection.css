@@ -1,0 +1,43 @@
+.expandable-container {
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    overflow: hidden; /* Hides content that exceeds max-height */
+}
+  
+.expandable-header {
+    background-color: #f1f1f1;
+    padding: 10px 15px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+}
+  
+.icon {
+    transition: transform 0.3s ease;
+}
+  
+.icon.expanded {
+    transform: rotate(180deg);
+}
+  
+.expandable-content {
+    max-height: 0;
+    transition: max-height 0.3s ease-out; /* Smooth transition */
+    background-color: #fff;
+    overflow: hidden; /* Crucial for hiding the overflowing content during transition */
+}
+  
+.expandable-content.opened {
+    max-height: 1000px; /* A value larger than the maximum possible content height */
+    transition: max-height 0.3s ease-in;
+}
+  
+.content-inner {
+    padding: 15px;
+}
