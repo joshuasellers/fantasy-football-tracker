@@ -6,7 +6,8 @@
 }
   
 .expandable-header {
-    background-color: #f1f1f1;
+    background-color: transparent;
+    color: #f7fafc;
     padding: 10px 15px;
     width: 100%;
     text-align: left;
@@ -29,7 +30,7 @@
 .expandable-content {
     max-height: 0;
     transition: max-height 0.3s ease-out; /* Smooth transition */
-    background-color: #fff;
+    background-color: transparent;
     overflow: hidden; /* Crucial for hiding the overflowing content during transition */
 }
   
