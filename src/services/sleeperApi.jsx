@@ -86,20 +86,6 @@ export class SleeperApiService {
     }
   }
 
-  // Get league transactions
-  static async getLeagueTransactions(leagueId) {
-    try {
-      const response = await fetch(`${SLEEPER_BASE_URL}/league/${leagueId}/transactions`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch transactions');
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Error fetching transactions:', error);
-      return [];
-    }
-  }
-
   // Get NFL state (current week, season info)
   static async getNflState() {
     try {

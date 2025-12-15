@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function Scoring({ teams, allTeams, matchups, transactions, currentWeek, loading }) {
+function Scoring({ teams, allTeams, matchups, currentWeek, loading }) {
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
   const [activeTab, setActiveTab] = useState('live-scoring');
 
@@ -25,19 +25,32 @@ function Scoring({ teams, allTeams, matchups, transactions, currentWeek, loading
   };
 
   const getOpponentName = (matchup) => {
-    const opponent_id = matchups.find(m => 
+    const opponentMatchup = matchups.find(m => 
       m.matchup_id === matchup.matchup_id && 
       m.roster_id !== matchup.roster_id && 
-      m.leagueId === matchup.leagueId).roster_id;
-
+      m.leagueId === matchup.leagueId
+    );
+    
+    if (!opponentMatchup) return 'TBD';
+    
     const opponent = allTeams.find(t => 
-      t.roster_id === opponent_id && 
+      t.roster_id === opponentMatchup.roster_id && 
       t.leagueId === matchup.leagueId
     );
     return opponent ? opponent.team_name : 'TBD';
   };
 
-  const renderScoringTab = () => {  
+  const renderScoringTab = () => {
+    if (!matchups || matchups.length === 0) {
+      return (
+        <div className="no-scoring-data">
+          <i className="fas fa-chart-line"></i>
+          <h3>No Scoring Data</h3>
+          <p>No matchup data available for the selected week.</p>
+        </div>
+      );
+    }
+    
     // Group matchups by league, matching both roster_id and leagueId to avoid collisions
     const matchupsByLeague = {};
     matchups.forEach(matchup => {
@@ -84,86 +97,13 @@ function Scoring({ teams, allTeams, matchups, transactions, currentWeek, loading
   };
 
   const renderNotificationsTab = () => {
-    if (!transactions || transactions.length === 0) {
-      return (
-        <div className="no-notifications">
-          <i className="fas fa-bell-slash"></i>
-          <h3>No Recent Activity</h3>
-          <p>No recent transactions or league updates to show.</p>
-        </div>
-      );
-    }
-
-    const recentTransactions = transactions
-      .filter(t => t.status === 'complete' || t.status === 'pending')
-      .slice(0, 10)
-      .sort((a, b) => new Date(b.created) - new Date(a.created));
-
-    return recentTransactions.map(transaction => {
-      const notificationData = processTransactionToNotification(transaction);
-      
-      return (
-        <div key={transaction.transaction_id} className="notification-item">
-          <div className="notification-icon">
-            <i className={notificationData.icon}></i>
-          </div>
-          <div className="notification-content">
-            <h4>{notificationData.title}</h4>
-            <p>{notificationData.message}</p>
-            <span className="notification-time">{formatTimeAgo(transaction.created)}</span>
-          </div>
-          <div className="notification-actions">
-            <button className="btn btn-sm btn-primary">View</button>
-          </div>
-        </div>
-      );
-    });
-  };
-
-  const processTransactionToNotification = (transaction) => {
-    switch (transaction.type) {
-      case 'trade':
-        return {
-          icon: 'fas fa-exchange-alt',
-          title: 'Trade Completed',
-          message: `Trade completed in ${transaction.leagueName}`
-        };
-      case 'waiver':
-        return {
-          icon: 'fas fa-user-plus',
-          title: 'Waiver Claim',
-          message: `Waiver claim processed in ${transaction.leagueName}`
-        };
-      case 'free_agent':
-        return {
-          icon: 'fas fa-user-plus',
-          title: 'Free Agent Pickup',
-          message: `Free agent pickup in ${transaction.leagueName}`
-        };
-      case 'drop':
-        return {
-          icon: 'fas fa-user-minus',
-          title: 'Player Dropped',
-          message: `Player dropped in ${transaction.leagueName}`
-        };
-      default:
-        return {
-          icon: 'fas fa-info-circle',
-          title: 'League Update',
-          message: `Activity in ${transaction.leagueName}`
-        };
-    }
-  };
-
-  const formatTimeAgo = (timestamp) => {
-    const now = new Date();
-    const time = new Date(timestamp);
-    const diffInSeconds = Math.floor((now - time) / 1000);
-    
-    if (diffInSeconds < 60) return 'Just now';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-    return `${Math.floor(diffInSeconds / 86400)} days ago`;
+    return (
+      <div className="no-notifications">
+        <i className="fas fa-bell-slash"></i>
+        <h3>No Recent Activity</h3>
+        <p>Notifications are currently unavailable. This feature may be added in a future update.</p>
+      </div>
+    );
   };
 
   return (

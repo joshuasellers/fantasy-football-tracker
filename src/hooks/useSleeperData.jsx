@@ -5,7 +5,6 @@ export function useSleeperData() {
   const [teams, setTeams] = useState([]);
   const [allTeams, setAllTeams] = useState([]); // All teams in all leagues (including opponents)
   const [matchups, setMatchups] = useState([]);
-  const [transactions, setTransactions] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [currentWeek, setCurrentWeek] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -39,17 +38,15 @@ export function useSleeperData() {
       const convertedTeams = [];
       const allLeagueTeams = []; // All teams including opponents
       const allMatchups = [];
-      const allTransactions = [];
 
       for (const league of leagues) {
         try {
           // Get league data
-          const [leagueData, rosters, users, currentMatchups, leagueTransactions] = await Promise.all([
+          const [leagueData, rosters, users, currentMatchups] = await Promise.all([
             SleeperApiService.getLeague(league.league_id),
             SleeperApiService.getLeagueRosters(league.league_id),
             SleeperApiService.getLeagueUsers(league.league_id),
             SleeperApiService.getLeagueMatchups(league.league_id, nflState.week),
-            SleeperApiService.getLeagueTransactions(league.league_id)
           ]);
 
           const matchupsWithLeague = currentMatchups.map(matchup => ({
@@ -77,12 +74,6 @@ export function useSleeperData() {
 
           allMatchups.push(...matchupsWithLeague);
 
-          // Add transactions with league context
-          allTransactions.push(...leagueTransactions.map(t => ({ 
-            ...t, 
-            leagueName: leagueData.name 
-          })));
-
         } catch (leagueError) {
           console.error(`Error processing league ${league.league_id}:`, leagueError);
         }
@@ -92,12 +83,7 @@ export function useSleeperData() {
       setTeams(convertedTeams);
       setAllTeams(allLeagueTeams);
       setMatchups(allMatchups);
-      setTransactions(allTransactions);
       setAllWeeksData(prev => ({ ...prev, [nflState.week]: allMatchups }));
-
-      // Process notifications from transactions
-      const processedNotifications = processTransactionsToNotifications(allTransactions);
-      setNotifications(processedNotifications);
 
     } catch (err) {
       setError(err.message);
@@ -155,7 +141,6 @@ export function useSleeperData() {
     teams,
     allTeams, // All teams in all leagues (including opponents)
     matchups,
-    transactions,
     notifications,
     currentWeek,
     loading,
@@ -299,41 +284,4 @@ function convertAllRostersToTeams(sleeperData, playersData) {
   }
 
   return convertedTeams;
-}
-
-// Helper function to process transactions into notifications
-function processTransactionsToNotifications(transactions) {
-  return transactions
-    .filter(t => t.status === 'complete' || t.status === 'pending')
-    .slice(0, 10) // Show last 10 transactions
-    .sort((a, b) => new Date(b.created) - new Date(a.created))
-    .map(transaction => ({
-      id: transaction.transaction_id,
-      type: transaction.type,
-      title: getTransactionTitle(transaction.type),
-      message: `${getTransactionTitle(transaction.type)} in ${transaction.leagueName}`,
-      time: formatTimeAgo(transaction.created),
-      read: false
-    }));
-}
-
-function getTransactionTitle(type) {
-  switch (type) {
-    case 'trade': return 'Trade Completed';
-    case 'waiver': return 'Waiver Claim';
-    case 'free_agent': return 'Free Agent Pickup';
-    case 'drop': return 'Player Dropped';
-    default: return 'League Update';
-  }
-}
-
-function formatTimeAgo(timestamp) {
-  const now = new Date();
-  const time = new Date(timestamp);
-  const diffInSeconds = Math.floor((now - time) / 1000);
-  
-  if (diffInSeconds < 60) return 'Just now';
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-  return `${Math.floor(diffInSeconds / 86400)} days ago`;
 }

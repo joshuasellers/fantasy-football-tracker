@@ -11,7 +11,6 @@ jest.mock('../../services/sleeperApi', () => {
     getLeagueRosters: jest.fn(),
     getLeagueUsers: jest.fn(),
     getLeagueMatchups: jest.fn(),
-    getLeagueTransactions: jest.fn(),
     getNflState: jest.fn(),
     getAllPlayers: jest.fn(),
   };
@@ -33,7 +32,6 @@ describe('useSleeperData', () => {
     expect(result.current.teams).toEqual([]);
     expect(result.current.allTeams).toEqual([]);
     expect(result.current.matchups).toEqual([]);
-    expect(result.current.transactions).toEqual([]);
     expect(result.current.notifications).toEqual([]);
     expect(result.current.currentWeek).toBe(1);
     expect(result.current.loading).toBe(false);
@@ -75,7 +73,6 @@ describe('useSleeperData', () => {
       { roster_id: '1', points: 100, players_points: { player1: 10, player2: 5 } },
       { roster_id: '2', points: 80, players_points: { player3: 8 } }
     ];
-    const mockTransactions = [{ transaction_id: '1', type: 'trade', status: 'complete', created: new Date().toISOString(), leagueName: 'League 1' }];
     const mockPlayers = {
       player1: { first_name: 'John', last_name: 'Doe', team: 'NYG', position: 'RB' },
       player2: { first_name: 'Jane', last_name: 'Smith', team: 'DAL', position: 'WR' },
@@ -89,7 +86,6 @@ describe('useSleeperData', () => {
     SleeperApiService.getLeagueRosters.mockResolvedValueOnce(mockRosters);
     SleeperApiService.getLeagueUsers.mockResolvedValueOnce(mockUsers);
     SleeperApiService.getLeagueMatchups.mockResolvedValueOnce(mockMatchups);
-    SleeperApiService.getLeagueTransactions.mockResolvedValueOnce(mockTransactions);
     SleeperApiService.getAllPlayers.mockResolvedValueOnce(mockPlayers);
 
     const { result } = renderHook(() => useSleeperData());
@@ -110,7 +106,6 @@ describe('useSleeperData', () => {
     expect(result.current.matchups.length).toBeGreaterThan(0);
     expect(result.current.teams[0].leagueId).toBe('1');
     expect(result.current.matchups[0].leagueId).toBe('1');
-    expect(result.current.transactions.length).toBeGreaterThan(0);
     
     // Verify allTeams includes all teams (user's team + opponents)
     expect(result.current.allTeams.length).toBeGreaterThanOrEqual(2); // Should have at least 2 teams
@@ -183,7 +178,6 @@ describe('useSleeperData', () => {
     SleeperApiService.getLeagueRosters.mockResolvedValueOnce(mockRosters);
     SleeperApiService.getLeagueUsers.mockResolvedValueOnce(mockUsers);
     SleeperApiService.getLeagueMatchups.mockResolvedValueOnce(mockMatchups);
-    SleeperApiService.getLeagueTransactions.mockResolvedValueOnce([]);
     SleeperApiService.getAllPlayers.mockResolvedValueOnce(mockPlayers);
 
     const { result } = renderHook(() => useSleeperData());

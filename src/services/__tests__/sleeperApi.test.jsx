@@ -135,29 +135,6 @@ describe('SleeperApiService', () => {
     });
   });
 
-  describe('getLeagueTransactions', () => {
-    it('should fetch league transactions successfully', async () => {
-      const mockTransactions = [{ transaction_id: '1', type: 'trade' }];
-      fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockTransactions,
-      });
-
-      const result = await SleeperApiService.getLeagueTransactions('1');
-      expect(result).toEqual(mockTransactions);
-      expect(fetch).toHaveBeenCalledWith('https://api.sleeper.app/v1/league/1/transactions');
-    });
-
-    it('should return empty array on error', async () => {
-      fetch.mockResolvedValueOnce({
-        ok: false,
-      });
-
-      const result = await SleeperApiService.getLeagueTransactions('1');
-      expect(result).toEqual([]);
-    });
-  });
-
   describe('getNflState', () => {
     it('should fetch NFL state successfully', async () => {
       const mockState = { week: 5, season: 2024 };

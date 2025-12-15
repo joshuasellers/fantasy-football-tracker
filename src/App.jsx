@@ -20,7 +20,6 @@ function App() {
     teams, 
     allTeams,
     matchups, 
-    transactions, 
     notifications,
     currentWeek,
     loading,
@@ -95,7 +94,6 @@ function App() {
                   teams={teams}
                   allTeams={allTeams}
                   matchups={matchups}
-                  transactions={transactions}
                   currentWeek={currentWeek}
                   loading={loading}
                 />

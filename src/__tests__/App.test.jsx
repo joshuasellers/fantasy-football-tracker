@@ -9,8 +9,8 @@ jest.mock('../hooks/useSleeperData');
 describe('App', () => {
   const mockUseSleeperData = {
     teams: [],
+    allTeams: [],
     matchups: [],
-    transactions: [],
     notifications: [],
     currentWeek: 1,
     loading: false,

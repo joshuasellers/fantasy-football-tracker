@@ -29,18 +29,24 @@ function Updates() {
   useEffect(() => {
     const loadReadme = async () => {
       try {
-        const res = await fetch(`${process.env.PUBLIC_URL}/README.md`);
+        // Use raw.githubusercontent.com instead of blob URL to avoid CORS issues
+        const url = "https://raw.githubusercontent.com/joshuasellers/fantasy-football-tracker/main/README.md";
+        const res = await fetch(url);
         if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const text = await res.text();
+        if (!text) {
           setLoading(false);
           return;
         }
-        const text = await res.text();
         const plannedList = parseSection(text, 'Planned Improvements');
         const bugsList = parseSection(text, 'Open Bugs');
         if (plannedList.length) setPlanned(plannedList);
         if (bugsList.length) setBugs(bugsList);
-      } catch (e) {
-        console.error('Failed to load README for updates page:', e);
+      } catch(error){
+        // Silently fall back to defaults if fetch fails
+        console.warn('Could not load README from GitHub, using defaults:', error.message);
       } finally {
         setLoading(false);
       }

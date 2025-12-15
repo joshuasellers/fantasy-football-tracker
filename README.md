@@ -141,6 +141,7 @@ This React application includes:
 
 ## Planned Improvements
 - Migrate to a Node backend script to periodically fetch and refresh league data without relying on a manual “Connect to Sleeper” action.
+- I removed the notifaction code for now (add back later)
 
 ### Open Bugs
 - Player projections are currently always 0; investigate and correct projection sourcing.
@@ -148,6 +149,7 @@ This React application includes:
 - Scoring projections in general look wonky. Need to be updated.
 - calculatePositionScores
 - calculatePositionScores
+
 
 ## Browser Support
 

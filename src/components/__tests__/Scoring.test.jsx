@@ -20,22 +20,12 @@ describe('Scoring', () => {
     },
   ];
 
-  const mockTransactions = [
-    {
-      transaction_id: '1',
-      type: 'trade',
-      status: 'complete',
-      created: new Date().toISOString(),
-      leagueName: 'League 1',
-    },
-  ];
-
   it('should render scoring component', () => {
     render(
       <Scoring
         teams={mockTeams}
+        allTeams={[]}
         matchups={mockMatchups}
-        transactions={mockTransactions}
         currentWeek={5}
         loading={false}
       />
@@ -48,8 +38,8 @@ describe('Scoring', () => {
     render(
       <Scoring
         teams={mockTeams}
+        allTeams={[]}
         matchups={mockMatchups}
-        transactions={mockTransactions}
         currentWeek={5}
         loading={false}
       />
@@ -63,8 +53,8 @@ describe('Scoring', () => {
     render(
       <Scoring
         teams={mockTeams}
+        allTeams={[]}
         matchups={mockMatchups}
-        transactions={mockTransactions}
         currentWeek={5}
         loading={false}
       />
@@ -73,15 +63,15 @@ describe('Scoring', () => {
     const notificationsTab = screen.getByText(/League Updates/i);
     fireEvent.click(notificationsTab);
 
-    expect(screen.getAllByText(/Trade Completed/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/No Recent Activity/i)).toBeInTheDocument();
   });
 
   it('should display week selector', () => {
     render(
       <Scoring
         teams={mockTeams}
+        allTeams={[]}
         matchups={mockMatchups}
-        transactions={mockTransactions}
         currentWeek={5}
         loading={false}
       />
@@ -94,8 +84,8 @@ describe('Scoring', () => {
     render(
       <Scoring
         teams={mockTeams}
+        allTeams={[]}
         matchups={[]}
-        transactions={mockTransactions}
         currentWeek={5}
         loading={false}
       />
@@ -108,8 +98,8 @@ describe('Scoring', () => {
     render(
       <Scoring
         teams={mockTeams}
+        allTeams={[]}
         matchups={mockMatchups}
-        transactions={mockTransactions}
         currentWeek={5}
         loading={false}
       />
@@ -119,46 +109,12 @@ describe('Scoring', () => {
     expect(screen.getByText(/100/i)).toBeInTheDocument();
   });
 
-  it('should show no notifications when transactions are empty', () => {
-    render(
-      <Scoring
-        teams={mockTeams}
-        matchups={mockMatchups}
-        transactions={[]}
-        currentWeek={5}
-        loading={false}
-      />
-    );
-
-    const notificationsTab = screen.getByText(/League Updates/i);
-    fireEvent.click(notificationsTab);
-
-    expect(screen.getByText(/No Recent Activity/i)).toBeInTheDocument();
-  });
-
-  it('should display transaction notifications', () => {
-    render(
-      <Scoring
-        teams={mockTeams}
-        matchups={mockMatchups}
-        transactions={mockTransactions}
-        currentWeek={5}
-        loading={false}
-      />
-    );
-
-    const notificationsTab = screen.getByText(/League Updates/i);
-    fireEvent.click(notificationsTab);
-
-    expect(screen.getAllByText(/Trade Completed/i).length).toBeGreaterThan(0);
-  });
-
   it('should show loading indicator when loading', () => {
     render(
       <Scoring
         teams={mockTeams}
+        allTeams={[]}
         matchups={mockMatchups}
-        transactions={mockTransactions}
         currentWeek={5}
         loading={true}
       />
@@ -171,8 +127,8 @@ describe('Scoring', () => {
     render(
       <Scoring
         teams={mockTeams}
+        allTeams={[]}
         matchups={mockMatchups}
-        transactions={mockTransactions}
         currentWeek={5}
         loading={false}
       />
@@ -188,8 +144,8 @@ describe('Scoring', () => {
     render(
       <Scoring
         teams={mockTeams}
+        allTeams={[]}
         matchups={mockMatchups}
-        transactions={mockTransactions}
         currentWeek={5}
         loading={false}
       />
@@ -199,33 +155,6 @@ describe('Scoring', () => {
     expect(screen.getByText(/QB:/i)).toBeInTheDocument();
     expect(screen.getByText(/RB:/i)).toBeInTheDocument();
     expect(screen.getByText(/WR:/i)).toBeInTheDocument();
-  });
-
-  it('should format time ago correctly', () => {
-    const recentTransaction = [
-      {
-        transaction_id: '1',
-        type: 'waiver',
-        status: 'complete',
-        created: new Date(Date.now() - 30000).toISOString(), // 30 seconds ago
-        leagueName: 'League 1',
-      },
-    ];
-
-    render(
-      <Scoring
-        teams={mockTeams}
-        matchups={mockMatchups}
-        transactions={recentTransaction}
-        currentWeek={5}
-        loading={false}
-      />
-    );
-
-    const notificationsTab = screen.getByText(/League Updates/i);
-    fireEvent.click(notificationsTab);
-
-    expect(screen.getByText(/Just now/i)).toBeInTheDocument();
   });
 });
 
