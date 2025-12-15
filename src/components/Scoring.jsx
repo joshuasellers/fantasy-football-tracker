@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function Scoring({ teams, matchups, transactions, currentWeek, loading }) {
+function Scoring({ teams, allTeams, matchups, transactions, currentWeek, loading }) {
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
   const [activeTab, setActiveTab] = useState('live-scoring');
 
@@ -24,25 +24,20 @@ function Scoring({ teams, matchups, transactions, currentWeek, loading }) {
     return ((matchup.points || 0) * 1.2).toFixed(1);
   };
 
-  const getOpponentName = (matchup, leagueMatchups) => {
-    const opponent = leagueMatchups.find(m => 
-      m.matchup.matchup_id === matchup.matchup_id && 
-      m.matchup.roster_id !== matchup.roster_id
+  const getOpponentName = (matchup) => {
+    const opponent_id = matchups.find(m => 
+      m.matchup_id === matchup.matchup_id && 
+      m.roster_id !== matchup.roster_id && 
+      m.leagueId === matchup.leagueId).roster_id;
+
+    const opponent = allTeams.find(t => 
+      t.roster_id === opponent_id && 
+      t.leagueId === matchup.leagueId
     );
-    return opponent ? opponent.team.team_name : 'TBD';
+    return opponent ? opponent.team_name : 'TBD';
   };
 
-  const renderScoringTab = () => {
-    if (!matchups || matchups.length === 0) {
-      return (
-        <div className="no-scoring-data">
-          <i className="fas fa-chart-line"></i>
-          <h3>No Scoring Data</h3>
-          <p>No matchup data available for the selected week.</p>
-        </div>
-      );
-    }
-
+  const renderScoringTab = () => {  
     // Group matchups by league, matching both roster_id and leagueId to avoid collisions
     const matchupsByLeague = {};
     matchups.forEach(matchup => {
@@ -80,7 +75,7 @@ function Scoring({ teams, matchups, transactions, currentWeek, loading }) {
             </div>
             <div className="matchup-info">
               <span className="week-info">Week {selectedWeek}</span>
-              <span className="opponent-info">vs {getOpponentName(matchup, leagueMatchups)}</span>
+              <span className="opponent-info">vs {getOpponentName(matchup)}</span>
             </div>
           </div>
         );

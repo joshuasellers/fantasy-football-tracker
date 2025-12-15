@@ -146,6 +146,8 @@ This React application includes:
 - Player projections are currently always 0; investigate and correct projection sourcing.
 - Scoring page can mis-attribute teams when roster IDs are reused across leagues; continue monitoring after recent fixes.
 - Scoring projections in general look wonky. Need to be updated.
+- calculatePositionScores
+- calculatePositionScores
 
 ## Browser Support
 

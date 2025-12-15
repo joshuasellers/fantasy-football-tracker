@@ -3,6 +3,7 @@ import SleeperApiService from '../services/sleeperApi';
 
 export function useSleeperData() {
   const [teams, setTeams] = useState([]);
+  const [allTeams, setAllTeams] = useState([]); // All teams in all leagues (including opponents)
   const [matchups, setMatchups] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [notifications, setNotifications] = useState([]);
@@ -36,6 +37,7 @@ export function useSleeperData() {
 
       // Process each league
       const convertedTeams = [];
+      const allLeagueTeams = []; // All teams including opponents
       const allMatchups = [];
       const allTransactions = [];
 
@@ -55,7 +57,7 @@ export function useSleeperData() {
             leagueId: league.league_id
           }));
 
-          // Convert to internal format
+          // Convert user's team to internal format
           const convertedTeam = convertSleeperDataToInternal(
             { league: leagueData, rosters, users, matchups: currentMatchups },
             players,
@@ -64,8 +66,16 @@ export function useSleeperData() {
 
           if (convertedTeam) {
             convertedTeams.push(convertedTeam);
-            allMatchups.push(...matchupsWithLeague);
           }
+
+          // Convert ALL teams in the league (including opponents)
+          const leagueTeams = convertAllRostersToTeams(
+            { league: leagueData, rosters, users, matchups: currentMatchups },
+            players
+          );
+          allLeagueTeams.push(...leagueTeams);
+
+          allMatchups.push(...matchupsWithLeague);
 
           // Add transactions with league context
           allTransactions.push(...leagueTransactions.map(t => ({ 
@@ -80,6 +90,7 @@ export function useSleeperData() {
 
       // Update state
       setTeams(convertedTeams);
+      setAllTeams(allLeagueTeams);
       setMatchups(allMatchups);
       setTransactions(allTransactions);
       setAllWeeksData(prev => ({ ...prev, [nflState.week]: allMatchups }));
@@ -109,18 +120,22 @@ export function useSleeperData() {
         return;
       }
 
-      // Fetch new week data
+      // Fetch new week data for all unique leagues
+      const uniqueLeagues = new Set();
+      teams.forEach(team => uniqueLeagues.add(team.leagueId || team.id));
+      allTeams.forEach(team => uniqueLeagues.add(team.leagueId));
+
       const weekMatchups = [];
-      for (const team of teams) {
+      for (const leagueId of uniqueLeagues) {
         try {
-          const matchups = await SleeperApiService.getLeagueMatchups(team.id, week);
+          const matchups = await SleeperApiService.getLeagueMatchups(leagueId, week);
           const matchupsWithLeague = matchups.map(matchup => ({
             ...matchup,
-            leagueId: team.leagueId || team.id
+            leagueId: leagueId
           }));
           weekMatchups.push(...matchupsWithLeague);
         } catch (error) {
-          console.error(`Error fetching week ${week} data for league ${team.id}:`, error);
+          console.error(`Error fetching week ${week} data for league ${leagueId}:`, error);
         }
       }
 
@@ -134,10 +149,11 @@ export function useSleeperData() {
     } finally {
       setLoading(false);
     }
-  }, [currentWeek, allWeeksData, teams]);
+  }, [currentWeek, allWeeksData, teams, allTeams]);
 
   return {
     teams,
+    allTeams, // All teams in all leagues (including opponents)
     matchups,
     transactions,
     notifications,
@@ -150,7 +166,7 @@ export function useSleeperData() {
   };
 }
 
-// Helper function to convert Sleeper data to internal format
+// Helper function to convert Sleeper data to internal format (user's teams only)
 function convertSleeperDataToInternal(sleeperData, playersData, userId) {
   const { league, rosters, users, matchups } = sleeperData;
   
@@ -208,6 +224,81 @@ function convertSleeperDataToInternal(sleeperData, playersData, userId) {
     roster_id: userRoster.roster_id,
     settings: userRoster.settings
   };
+}
+
+// Helper function to convert ALL rosters to team objects (including opponents)
+function convertAllRostersToTeams(sleeperData, playersData) {
+  const { league, rosters, users, matchups } = sleeperData;
+  const convertedTeams = [];
+
+  // Process each roster in the league
+  for (const roster of rosters) {
+    // Find user info for this roster
+    const userInfo = users.find(user => user.user_id === roster.owner_id);
+    if (!userInfo) continue;
+
+    // Get matchup data for this roster
+    const matchup = matchups.find(m => m.roster_id === roster.roster_id);
+    
+    // Convert roster players to our format with scores
+    const convertedPlayers = roster.players.map(playerId => {
+      const player = playersData[playerId];
+      const isStarting = roster.starters.includes(playerId);
+      
+      // Get player score from matchup data if available
+      let playerScore = 0;
+      if (matchup && matchup.players_points) {
+        playerScore = matchup.players_points[playerId] || 0;
+      }
+
+      if (!player) {
+        return {
+          id: playerId,
+          name: `Player ${playerId}`,
+          team: 'UNK',
+          position: 'UNK',
+          projection: 0,
+          score: playerScore,
+          status: isStarting ? 'starting' : 'bench',
+          injury_status: null,
+          news_updated: null
+        };
+      }
+      
+      return {
+        id: playerId,
+        name: `${player.first_name} ${player.last_name}`,
+        team: player.team || 'UNK',
+        position: player.position || 'UNK',
+        projection: 0,
+        score: playerScore,
+        status: isStarting ? 'starting' : 'bench',
+        injury_status: player.injury_status,
+        news_updated: player.news_updated
+      };
+    });
+
+    // Create team object
+    const teamObject = {
+      id: `${league.league_id}-${roster.roster_id}`, // Unique ID combining league and roster
+      leagueId: league.league_id,
+      league_name: league.name,
+      team_name: userInfo.metadata?.team_name || userInfo.display_name || `Team ${roster.roster_id}`,
+      owner_id: roster.owner_id,
+      owner_display_name: userInfo.display_name,
+      platform: 'Sleeper',
+      players: convertedPlayers,
+      currentScore: matchup ? matchup.points : 0,
+      projectedScore: 0,
+      roster_id: roster.roster_id,
+      settings: roster.settings,
+      matchup_id: matchup ? matchup.matchup_id : null
+    };
+
+    convertedTeams.push(teamObject);
+  }
+
+  return convertedTeams;
 }
 
 // Helper function to process transactions into notifications

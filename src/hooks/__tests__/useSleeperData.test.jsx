@@ -31,6 +31,7 @@ describe('useSleeperData', () => {
     const { result } = renderHook(() => useSleeperData());
 
     expect(result.current.teams).toEqual([]);
+    expect(result.current.allTeams).toEqual([]);
     expect(result.current.matchups).toEqual([]);
     expect(result.current.transactions).toEqual([]);
     expect(result.current.notifications).toEqual([]);
@@ -44,21 +45,41 @@ describe('useSleeperData', () => {
     const mockLeagues = [{ league_id: '1', name: 'League 1' }];
     const mockNflState = { week: 5, season: 2024 };
     const mockLeagueData = { league_id: '1', name: 'League 1' };
-    const mockRosters = [{
-      roster_id: '1',
-      owner_id: '123',
-      players: ['player1', 'player2'],
-      starters: ['player1']
-    }];
-    const mockUsers = [{
-      user_id: '123',
-      metadata: { team_name: 'My Team' }
-    }];
-    const mockMatchups = [{ roster_id: '1', points: 100 }];
+    const mockRosters = [
+      {
+        roster_id: '1',
+        owner_id: '123',
+        players: ['player1', 'player2'],
+        starters: ['player1']
+      },
+      {
+        roster_id: '2',
+        owner_id: '456',
+        players: ['player3'],
+        starters: ['player3']
+      }
+    ];
+    const mockUsers = [
+      {
+        user_id: '123',
+        display_name: 'User 123',
+        metadata: { team_name: 'My Team' }
+      },
+      {
+        user_id: '456',
+        display_name: 'User 456',
+        metadata: { team_name: 'Opponent Team' }
+      }
+    ];
+    const mockMatchups = [
+      { roster_id: '1', points: 100, players_points: { player1: 10, player2: 5 } },
+      { roster_id: '2', points: 80, players_points: { player3: 8 } }
+    ];
     const mockTransactions = [{ transaction_id: '1', type: 'trade', status: 'complete', created: new Date().toISOString(), leagueName: 'League 1' }];
     const mockPlayers = {
       player1: { first_name: 'John', last_name: 'Doe', team: 'NYG', position: 'RB' },
-      player2: { first_name: 'Jane', last_name: 'Smith', team: 'DAL', position: 'WR' }
+      player2: { first_name: 'Jane', last_name: 'Smith', team: 'DAL', position: 'WR' },
+      player3: { first_name: 'Bob', last_name: 'Johnson', team: 'KC', position: 'QB' }
     };
 
     SleeperApiService.getUser.mockResolvedValueOnce(mockUser);
@@ -85,10 +106,26 @@ describe('useSleeperData', () => {
 
     expect(result.current.currentWeek).toBe(5);
     expect(result.current.teams.length).toBeGreaterThan(0);
+    expect(result.current.allTeams.length).toBeGreaterThan(0);
     expect(result.current.matchups.length).toBeGreaterThan(0);
     expect(result.current.teams[0].leagueId).toBe('1');
     expect(result.current.matchups[0].leagueId).toBe('1');
     expect(result.current.transactions.length).toBeGreaterThan(0);
+    
+    // Verify allTeams includes all teams (user's team + opponents)
+    expect(result.current.allTeams.length).toBeGreaterThanOrEqual(2); // Should have at least 2 teams
+    const allTeam = result.current.allTeams[0];
+    expect(allTeam).toHaveProperty('leagueId');
+    expect(allTeam).toHaveProperty('team_name');
+    expect(allTeam).toHaveProperty('players');
+    expect(allTeam).toHaveProperty('currentScore');
+    expect(allTeam).toHaveProperty('roster_id');
+    expect(allTeam).toHaveProperty('owner_id');
+    
+    // Verify players have score property
+    if (allTeam.players && allTeam.players.length > 0) {
+      expect(allTeam.players[0]).toHaveProperty('score');
+    }
   });
 
   it('should handle errors when loading user data', async () => {

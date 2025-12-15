@@ -18,6 +18,7 @@ function App() {
   const [username, setUsername] = useState('jselles216');
   const { 
     teams, 
+    allTeams,
     matchups, 
     transactions, 
     notifications,
@@ -92,6 +93,7 @@ function App() {
               <Route path="/scoring" element={
                 <Scoring 
                   teams={teams}
+                  allTeams={allTeams}
                   matchups={matchups}
                   transactions={transactions}
                   currentWeek={currentWeek}
