@@ -5,7 +5,7 @@ import './styles/App.css';
 // Components
 import Dashboard from './components/Dashboard';
 import Lineups from './components/Lineups';
-import Recommendations from './components/Recommendations';
+import Notifications from './components/Notifications';
 import Scoring from './components/Scoring';
 import Updates from './components/Updates';
 
@@ -52,7 +52,7 @@ function App() {
   const sections = [
     { id: 'dashboard', label: 'Dashboard', icon: 'fas fa-tachometer-alt' },
     { id: 'lineups', label: 'Starting Lineups', icon: 'fas fa-users' },
-    { id: 'recommendations', label: 'Bench Recommendations', icon: 'fas fa-lightbulb' },
+    { id: 'Notifications', label: 'Notifications', icon: 'fas fa-lightbulb' },
     { id: 'scoring', label: 'Scoring & Notifications', icon: 'fas fa-chart-line' },
     { id: 'updates', label: 'Updates', icon: 'fas fa-info-circle' }
   ];
@@ -83,8 +83,8 @@ function App() {
                   onLoadUserData={loadUserData}
                 />
               } />
-              <Route path="/recommendations" element={
-                <Recommendations 
+              <Route path="/notifications" element={
+                <Notifications 
                   teams={teams}
                   loading={loading}
                 />

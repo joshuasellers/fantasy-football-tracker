@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function Recommendations({ teams, loading }) {
+function Notifications({ teams, loading }) {
   const [dismissedRecommendations, setDismissedRecommendations] = useState(new Set());
 
   const generateRecommendations = () => {
@@ -150,4 +150,4 @@ function Recommendations({ teams, loading }) {
   );
 }
 
-export default Recommendations;
+export default Notifications;

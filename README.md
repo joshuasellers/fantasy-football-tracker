@@ -10,16 +10,13 @@ A comprehensive React application to help you track and manage your fantasy foot
 - **Sleeper API integration** - Real-time data from your Sleeper leagues
 - ESPN integration coming soon!
 
-### 📊 Bench Recommendations
-- Intelligent analysis to identify players you should consider benching
-- Compare starting players with better bench options
-- One-click player swaps with confirmation
+### Notifications
+- League notifications and alerts
+- Trade proposals, waiver claims, and injury updates
 
 ### 📈 Live Scoring & Notifications
 - Real-time scoring updates for all your teams
 - Week-by-week matchup viewing
-- League notifications and alerts
-- Trade proposals, waiver claims, and injury updates
 
 ### 📱 Modern React Architecture
 - Component-based architecture
@@ -70,7 +67,7 @@ fantasy-football-tracker/
 │   ├── components/             # React components
 │   │   ├── Dashboard.js        # Dashboard overview
 │   │   ├── Lineups.js          # Starting lineups
-│   │   ├── Recommendations.js  # Bench recommendations
+│   │   ├── Notifications.js  # Bench notifications
 │   │   └── Scoring.js          # Live scoring & notifications
 │   ├── hooks/                  # Custom React hooks
 │   │   └── useSleeperData.js   # Sleeper API data management
@@ -131,7 +128,7 @@ This React application includes:
 ### Component Architecture
 - **Dashboard** - Overview of all teams and stats
 - **Lineups** - Starting lineup management
-- **Recommendations** - Bench optimization suggestions
+- **Notifications** - notifications
 - **Scoring** - Live scoring and notifications
 
 ### State Management

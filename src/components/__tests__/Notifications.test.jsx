@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import Recommendations from '../Recommendations';
+import Notifications from '../Notifications';
 
-describe('Recommendations', () => {
+describe('Notifications', () => {
   const mockTeams = [
     {
       id: '1',
