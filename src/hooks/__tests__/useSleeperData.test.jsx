@@ -11,6 +11,7 @@ jest.mock('../../services/sleeperApi', () => {
     getLeagueRosters: jest.fn(),
     getLeagueUsers: jest.fn(),
     getLeagueMatchups: jest.fn(),
+    getLeagueTransactions: jest.fn(),
     getNflState: jest.fn(),
     getAllPlayers: jest.fn(),
   };
@@ -78,6 +79,10 @@ describe('useSleeperData', () => {
       player2: { first_name: 'Jane', last_name: 'Smith', team: 'DAL', position: 'WR' },
       player3: { first_name: 'Bob', last_name: 'Johnson', team: 'KC', position: 'QB' }
     };
+    const mockTransactions = [
+      { transaction_id: '1', type: 'trade', status: 'complete', created: new Date().toISOString() },
+      { transaction_id: '2', type: 'waiver', status: 'complete', created: new Date().toISOString() }
+    ];
 
     SleeperApiService.getUser.mockResolvedValueOnce(mockUser);
     SleeperApiService.getUserLeagues.mockResolvedValueOnce(mockLeagues);
@@ -86,6 +91,7 @@ describe('useSleeperData', () => {
     SleeperApiService.getLeagueRosters.mockResolvedValueOnce(mockRosters);
     SleeperApiService.getLeagueUsers.mockResolvedValueOnce(mockUsers);
     SleeperApiService.getLeagueMatchups.mockResolvedValueOnce(mockMatchups);
+    SleeperApiService.getLeagueTransactions.mockResolvedValueOnce(mockTransactions);
     SleeperApiService.getAllPlayers.mockResolvedValueOnce(mockPlayers);
 
     const { result } = renderHook(() => useSleeperData());
@@ -121,6 +127,9 @@ describe('useSleeperData', () => {
     if (allTeam.players && allTeam.players.length > 0) {
       expect(allTeam.players[0]).toHaveProperty('score');
     }
+    
+    // Verify notifications are created from transactions
+    expect(result.current.notifications.length).toBeGreaterThan(0);
   });
 
   it('should handle errors when loading user data', async () => {
@@ -178,6 +187,7 @@ describe('useSleeperData', () => {
     SleeperApiService.getLeagueRosters.mockResolvedValueOnce(mockRosters);
     SleeperApiService.getLeagueUsers.mockResolvedValueOnce(mockUsers);
     SleeperApiService.getLeagueMatchups.mockResolvedValueOnce(mockMatchups);
+    SleeperApiService.getLeagueTransactions.mockResolvedValueOnce([]);
     SleeperApiService.getAllPlayers.mockResolvedValueOnce(mockPlayers);
 
     const { result } = renderHook(() => useSleeperData());

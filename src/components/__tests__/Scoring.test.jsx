@@ -31,39 +31,7 @@ describe('Scoring', () => {
       />
     );
 
-    expect(screen.getByText(/Scoring & League Notifications/i)).toBeInTheDocument();
-  });
-
-  it('should render tabs', () => {
-    render(
-      <Scoring
-        teams={mockTeams}
-        allTeams={[]}
-        matchups={mockMatchups}
-        currentWeek={5}
-        loading={false}
-      />
-    );
-
     expect(screen.getByText(/Live Scoring/i)).toBeInTheDocument();
-    expect(screen.getByText(/League Updates/i)).toBeInTheDocument();
-  });
-
-  it('should switch between tabs', () => {
-    render(
-      <Scoring
-        teams={mockTeams}
-        allTeams={[]}
-        matchups={mockMatchups}
-        currentWeek={5}
-        loading={false}
-      />
-    );
-
-    const notificationsTab = screen.getByText(/League Updates/i);
-    fireEvent.click(notificationsTab);
-
-    expect(screen.getByText(/No Recent Activity/i)).toBeInTheDocument();
   });
 
   it('should display week selector', () => {

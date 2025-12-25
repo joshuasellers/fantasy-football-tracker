@@ -129,6 +129,20 @@ export class SleeperApiService {
       return [];
     }
   }
+
+  // Get league transactions
+  static async getLeagueTransactions(leagueId) {
+    try {
+      const response = await fetch(`${SLEEPER_BASE_URL}/league/${leagueId}/transactions`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch transactions');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+      return [];
+    }
+  }
 }
 
 export default SleeperApiService;

@@ -3,7 +3,6 @@ import './styles/ExpandableSection.css';
 
 function Scoring({ teams, allTeams, matchups, currentWeek, loading }) {
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
-  const [activeTab, setActiveTab] = useState('live-scoring');
   const [isExpanded, setIsExpanded] = useState(false)
 
   const toggleExpansion = () => {
@@ -102,81 +101,38 @@ function Scoring({ teams, allTeams, matchups, currentWeek, loading }) {
     );
   };
 
-  const renderNotificationsTab = () => {
-    return (
-      <div className="no-notifications">
-        <i className="fas fa-bell-slash"></i>
-        <h3>No Recent Activity</h3>
-        <p>Notifications are currently unavailable. This feature may be added in a future update.</p>
-      </div>
-    );
-  };
-
   return (
     <section className="section">
-      <h2>Scoring & League Notifications</h2>
+      <h2>Live Scoring</h2>
       
-      <div className="scoring-tabs">
-        <button 
-          className={`tab-btn ${activeTab === 'live-scoring' ? 'active' : ''}`}
-          onClick={() => setActiveTab('live-scoring')}
+      <div className="week-selector">
+        <label htmlFor="week-select">Select Week:</label>
+        <select 
+          id="week-select"
+          value={selectedWeek}
+          onChange={(e) => setSelectedWeek(parseInt(e.target.value))}
         >
-          Live Scoring
-        </button>
-        <button 
-          className={`tab-btn ${activeTab === 'notifications' ? 'active' : ''}`}
-          onClick={() => setActiveTab('notifications')}
-        >
-          League Updates
+          <option value="">Choose a week...</option>
+          {Array.from({ length: 18 }, (_, i) => i + 1).map(week => (
+            <option key={week} value={week}>
+              Week {week}{week === currentWeek ? ' (Current)' : ''}
+            </option>
+          ))}
+        </select>
+        <button className="btn btn-secondary btn-sm">
+          <i className="fas fa-sync-alt"></i> Refresh
         </button>
       </div>
       
-      {activeTab === 'live-scoring' && (
-        <div className="tab-content active">
-          <div className="week-selector">
-            <label htmlFor="week-select">Select Week:</label>
-            <select 
-              id="week-select"
-              value={selectedWeek}
-              onChange={(e) => setSelectedWeek(parseInt(e.target.value))}
-            >
-              <option value="">Choose a week...</option>
-              {Array.from({ length: 18 }, (_, i) => i + 1).map(week => (
-                <option key={week} value={week}>
-                  Week {week}{week === currentWeek ? ' (Current)' : ''}
-                </option>
-              ))}
-            </select>
-            <button className="btn btn-secondary btn-sm">
-              <i className="fas fa-sync-alt"></i> Refresh
-            </button>
+      <div className="scoring-grid">
+        {loading ? (
+          <div className="loading-indicator">
+            <i className="fas fa-spinner fa-spin"></i> Loading scoring data...
           </div>
-          
-          <div className="scoring-grid">
-            {loading ? (
-              <div className="loading-indicator">
-                <i className="fas fa-spinner fa-spin"></i> Loading scoring data...
-              </div>
-            ) : (
-              renderScoringTab()
-            )}
-          </div>
-        </div>
-      )}
-      
-      {activeTab === 'notifications' && (
-        <div className="tab-content active">
-          <div className="notifications-list">
-            {loading ? (
-              <div className="loading-indicator">
-                <i className="fas fa-spinner fa-spin"></i> Loading notifications...
-              </div>
-            ) : (
-              renderNotificationsTab()
-            )}
-          </div>
-        </div>
-      )}
+        ) : (
+          renderScoringTab()
+        )}
+      </div>
     </section>
   );
 }

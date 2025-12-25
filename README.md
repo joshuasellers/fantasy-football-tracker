@@ -138,12 +138,12 @@ This React application includes:
 
 ## Planned Improvements
 - Migrate to a Node backend script to periodically fetch and refresh league data without relying on a manual “Connect to Sleeper” action.
-- I removed the notifaction code for now (add back later): add it in the bench tab (since projections are disabled)
 
 ### Open Bugs
 - Player projections are currently always 0; investigate and correct projection sourcing.
 - Scoring projections in general look wonky. Need to be updated.
 - calculatePositionScores
+- notifications tab not showing anything
 
 ## Browser Support
 

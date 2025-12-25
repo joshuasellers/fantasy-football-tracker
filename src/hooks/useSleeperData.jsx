@@ -38,15 +38,17 @@ export function useSleeperData() {
       const convertedTeams = [];
       const allLeagueTeams = []; // All teams including opponents
       const allMatchups = [];
+      const allTransactions = [];
 
       for (const league of leagues) {
         try {
           // Get league data
-          const [leagueData, rosters, users, currentMatchups] = await Promise.all([
+          const [leagueData, rosters, users, currentMatchups, leagueTransactions] = await Promise.all([
             SleeperApiService.getLeague(league.league_id),
             SleeperApiService.getLeagueRosters(league.league_id),
             SleeperApiService.getLeagueUsers(league.league_id),
             SleeperApiService.getLeagueMatchups(league.league_id, nflState.week),
+            SleeperApiService.getLeagueTransactions(league.league_id),
           ]);
 
           const matchupsWithLeague = currentMatchups.map(matchup => ({
@@ -74,15 +76,26 @@ export function useSleeperData() {
 
           allMatchups.push(...matchupsWithLeague);
 
+          // Add transactions with league context
+          allTransactions.push(...leagueTransactions.map(t => ({ 
+            ...t, 
+            leagueId: league.league_id,
+            leagueName: leagueData.name 
+          })));
+
         } catch (leagueError) {
           console.error(`Error processing league ${league.league_id}:`, leagueError);
         }
       }
 
+      // Process notifications from transactions
+      const processedNotifications = processTransactionsToNotifications(allTransactions);
+
       // Update state
       setTeams(convertedTeams);
       setAllTeams(allLeagueTeams);
       setMatchups(allMatchups);
+      setNotifications(processedNotifications);
       setAllWeeksData(prev => ({ ...prev, [nflState.week]: allMatchups }));
 
     } catch (err) {
@@ -284,4 +297,63 @@ function convertAllRostersToTeams(sleeperData, playersData) {
   }
 
   return convertedTeams;
+}
+
+// Helper function to process transactions into notifications
+function processTransactionsToNotifications(transactions) {
+  return transactions
+    .filter(t => t.status === 'complete' || t.status === 'pending')
+    .slice(0, 50) // Show last 50 transactions
+    .sort((a, b) => new Date(b.created || 0) - new Date(a.created || 0))
+    .map(transaction => ({
+      id: transaction.transaction_id || transaction.leg || `txn-${Date.now()}-${Math.random()}`,
+      type: transaction.type,
+      title: getTransactionTitle(transaction.type),
+      message: getTransactionMessage(transaction),
+      time: formatTimeAgo(transaction.created),
+      leagueName: transaction.leagueName,
+      leagueId: transaction.leagueId,
+      read: false,
+      status: transaction.status,
+      created: transaction.created
+    }));
+}
+
+function getTransactionTitle(type) {
+  switch (type) {
+    case 'trade': return 'Trade Completed';
+    case 'waiver': return 'Waiver Claim';
+    case 'free_agent': return 'Free Agent Pickup';
+    case 'drop': return 'Player Dropped';
+    default: return 'League Update';
+  }
+}
+
+function getTransactionMessage(transaction) {
+  const leagueName = transaction.leagueName || 'League';
+  switch (transaction.type) {
+    case 'trade':
+      return `Trade completed in ${leagueName}`;
+    case 'waiver':
+      return `Waiver claim processed in ${leagueName}`;
+    case 'free_agent':
+      return `Free agent pickup in ${leagueName}`;
+    case 'drop':
+      return `Player dropped in ${leagueName}`;
+    default:
+      return `Activity in ${leagueName}`;
+  }
+}
+
+function formatTimeAgo(timestamp) {
+  if (!timestamp) return 'Unknown time';
+  
+  const now = new Date();
+  const time = new Date(timestamp);
+  const diffInSeconds = Math.floor((now - time) / 1000);
+  
+  if (diffInSeconds < 60) return 'Just now';
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+  return `${Math.floor(diffInSeconds / 86400)} days ago`;
 }

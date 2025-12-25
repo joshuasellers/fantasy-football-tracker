@@ -52,8 +52,8 @@ function App() {
   const sections = [
     { id: 'dashboard', label: 'Dashboard', icon: 'fas fa-tachometer-alt' },
     { id: 'lineups', label: 'Starting Lineups', icon: 'fas fa-users' },
-    { id: 'Notifications', label: 'Notifications', icon: 'fas fa-lightbulb' },
-    { id: 'scoring', label: 'Scoring & Notifications', icon: 'fas fa-chart-line' },
+    { id: 'notifications', label: 'Notifications', icon: 'fas fa-bell' },
+    { id: 'scoring', label: 'Scoring', icon: 'fas fa-chart-line' },
     { id: 'updates', label: 'Updates', icon: 'fas fa-info-circle' }
   ];
 
@@ -85,7 +85,7 @@ function App() {
               } />
               <Route path="/notifications" element={
                 <Notifications 
-                  teams={teams}
+                  notifications={notifications}
                   loading={loading}
                 />
               } />

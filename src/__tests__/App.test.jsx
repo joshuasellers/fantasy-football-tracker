@@ -29,7 +29,7 @@ describe('App', () => {
     expect(screen.getAllByText(/Dashboard/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Starting Lineups/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Notifications/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Scoring & Notifications/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Scoring/i).length).toBeGreaterThan(0);
   });
 
   it('should render footer', () => {
