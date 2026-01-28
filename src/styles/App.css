@@ -43,6 +43,28 @@ body {
     padding: 1rem 20px;
 }
 
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 1rem;
+}
+
+.season-label {
+    color: #cbd5f5;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.season-select {
+    padding: 0.45rem 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    color: #e2e8f0;
+    font-size: 0.95rem;
+}
+
 .header h1 {
     color: #f7fafc;
     font-size: 1.8rem;

@@ -16,6 +16,7 @@ function App() {
   const [currentSection, setCurrentSection] = useState('dashboard');
   const [isConnecting, setIsConnecting] = useState(false);
   const [username, setUsername] = useState('jselles216');
+  const [selectedSeason, setSelectedSeason] = useState(new Date().getFullYear());
   const { 
     teams, 
     allTeams,
@@ -23,6 +24,7 @@ function App() {
     notifications,
     notificationsWeek,
     notificationsLoading,
+    season,
     currentWeek,
     loading,
     error,
@@ -32,7 +34,7 @@ function App() {
 
   useEffect(() => {
     // Auto-load user data on app start
-    loadUserData('jselles216');
+    loadUserData('jselles216', selectedSeason);
   }, [loadUserData]);
 
   const handleFloatingConnect = async () => {
@@ -44,7 +46,7 @@ function App() {
     setUsername(trimmed);
     setIsConnecting(true);
     try {
-      await loadUserData(trimmed);
+      await loadUserData(trimmed, selectedSeason);
     } catch (e) {
       console.error('Floating connect failed:', e);
     } finally {
@@ -67,6 +69,16 @@ function App() {
           sections={sections} 
           currentSection={currentSection}
           onSectionChange={setCurrentSection}
+          selectedSeason={selectedSeason}
+          onSeasonChange={async (newSeason) => {
+            setSelectedSeason(newSeason);
+            setIsConnecting(true);
+            try {
+              await loadUserData(username, newSeason);
+            } finally {
+              setIsConnecting(false);
+            }
+          }}
         />
         
         <main className="main">
@@ -127,8 +139,10 @@ function App() {
   );
 }
 
-function Header({ sections, currentSection, onSectionChange }) {
+function Header({ sections, currentSection, onSectionChange, selectedSeason, onSeasonChange }) {
   const location = useLocation();
+  const currentYear = new Date().getFullYear();
+  const seasons = Array.from({ length: 5 }, (_, i) => currentYear - i);
 
   return (
     <header className="header">
@@ -137,6 +151,19 @@ function Header({ sections, currentSection, onSectionChange }) {
           <i className="fas fa-football-ball"></i> 
           Fantasy Football Roster Tracker
         </h1>
+        <div className="header-controls">
+          <label className="season-label" htmlFor="season-select">Season:</label>
+          <select
+            id="season-select"
+            className="season-select"
+            value={selectedSeason}
+            onChange={(e) => onSeasonChange?.(parseInt(e.target.value))}
+          >
+            {seasons.map(y => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+        </div>
         <nav className="nav">
           {sections.map(section => (
             <Link

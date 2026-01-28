@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import SleeperApiService from '../services/sleeperApi';
 
 export function useSleeperData() {
+  const defaultSeason = new Date().getFullYear();
   const [teams, setTeams] = useState([]);
   const [allTeams, setAllTeams] = useState([]); // All teams in all leagues (including opponents)
   const [matchups, setMatchups] = useState([]);
@@ -9,13 +10,14 @@ export function useSleeperData() {
   const [notificationsWeek, setNotificationsWeek] = useState(null);
   const [notificationsByWeek, setNotificationsByWeek] = useState({});
   const [notificationsLoading, setNotificationsLoading] = useState(false);
+  const [season, setSeason] = useState(defaultSeason);
   const [currentWeek, setCurrentWeek] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [allWeeksData, setAllWeeksData] = useState({});
   const [playersData, setPlayersData] = useState({});
 
-  const loadUserData = useCallback(async (username) => {
+  const loadUserData = useCallback(async (username, targetSeason = season) => {
     if (!username) return;
 
     setLoading(true);
@@ -24,11 +26,16 @@ export function useSleeperData() {
     try {
       // Get user and leagues
       const user = await SleeperApiService.getUser(username);
-      const leagues = await SleeperApiService.getUserLeagues(user.user_id);
+      const leagues = await SleeperApiService.getUserLeagues(user.user_id, targetSeason);
       
-      // Get NFL state for current week
-      const nflState = await SleeperApiService.getNflState();
-      setCurrentWeek(nflState.week);
+      // For the current season, use NFL state for current week; otherwise default to week 1
+      let weekToLoad = 1;
+      if (targetSeason === defaultSeason) {
+        const nflState = await SleeperApiService.getNflState();
+        weekToLoad = nflState.week;
+      }
+      setSeason(targetSeason);
+      setCurrentWeek(weekToLoad);
 
       // Get players data (cached)
       let players = playersData;
@@ -50,8 +57,8 @@ export function useSleeperData() {
             SleeperApiService.getLeague(league.league_id),
             SleeperApiService.getLeagueRosters(league.league_id),
             SleeperApiService.getLeagueUsers(league.league_id),
-            SleeperApiService.getLeagueMatchups(league.league_id, nflState.week),
-            SleeperApiService.getLeagueTransactions(league.league_id, nflState.week),
+            SleeperApiService.getLeagueMatchups(league.league_id, weekToLoad),
+            SleeperApiService.getLeagueTransactions(league.league_id, weekToLoad),
           ]);
 
           const matchupsWithLeague = currentMatchups.map(matchup => ({
@@ -99,9 +106,9 @@ export function useSleeperData() {
       setAllTeams(allLeagueTeams);
       setMatchups(allMatchups);
       setNotifications(processedNotifications);
-      setNotificationsWeek(nflState.week);
-      setNotificationsByWeek(prev => ({ ...prev, [nflState.week]: processedNotifications }));
-      setAllWeeksData(prev => ({ ...prev, [nflState.week]: allMatchups }));
+      setNotificationsWeek(weekToLoad);
+      setNotificationsByWeek(prev => ({ ...prev, [weekToLoad]: processedNotifications }));
+      setAllWeeksData(prev => ({ ...prev, [weekToLoad]: allMatchups }));
 
     } catch (err) {
       setError(err.message);
@@ -109,7 +116,7 @@ export function useSleeperData() {
     } finally {
       setLoading(false);
     }
-  }, [playersData]);
+  }, [playersData, season, defaultSeason]);
 
   const loadNotificationsWeek = useCallback(async (week) => {
     if (!week) return;
@@ -199,6 +206,7 @@ export function useSleeperData() {
     notifications,
     notificationsWeek,
     notificationsLoading,
+    season,
     currentWeek,
     loading,
     error,

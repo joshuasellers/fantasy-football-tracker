@@ -29,6 +29,7 @@ describe('App', () => {
     render(<App />);
 
     expect(screen.getAllByText(/Fantasy Football Roster Tracker/i).length).toBeGreaterThan(0);
+    expect(screen.getByLabelText(/Season:/i)).toBeInTheDocument();
     expect(screen.getAllByText(/Dashboard/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Lineups/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Notifications/i).length).toBeGreaterThan(0);
@@ -44,7 +45,7 @@ describe('App', () => {
   it('should call loadUserData on mount', () => {
     render(<App />);
 
-    expect(mockUseSleeperData.loadUserData).toHaveBeenCalledWith('jselles216');
+    expect(mockUseSleeperData.loadUserData).toHaveBeenCalledWith('jselles216', expect.any(Number));
   });
 
   it('should render Dashboard component on root path', () => {
