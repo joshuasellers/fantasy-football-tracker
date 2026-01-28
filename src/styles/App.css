@@ -250,6 +250,48 @@ body {
     gap: 1.5rem;
 }
 
+.lineups-sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    grid-column: 1 / -1;
+}
+
+.lineups-section {
+    background: rgba(18, 24, 38, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 1.25rem;
+}
+
+.lineups-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #f7fafc;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+.position-group {
+    margin-bottom: 1.1rem;
+}
+
+.position-group-title {
+    color: #cbd5f5;
+    font-size: 0.95rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    opacity: 0.95;
+}
+
+.position-group-players {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
 .lineup-card {
     background: rgba(18, 24, 38, 0.9);
     border-radius: 12px;

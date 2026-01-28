@@ -27,7 +27,7 @@ describe('App', () => {
 
     expect(screen.getAllByText(/Fantasy Football Roster Tracker/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Dashboard/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Starting Lineups/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Lineups/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Notifications/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Scoring/i).length).toBeGreaterThan(0);
   });

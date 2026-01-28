@@ -18,7 +18,7 @@ describe('Lineups', () => {
   it('should render lineup component', () => {
     render(<Lineups teams={mockTeams} loading={false} />);
 
-    expect(screen.getByText(/Starting Lineups/i)).toBeInTheDocument();
+    expect(screen.getByText(/Lineups/i)).toBeInTheDocument();
     expect(screen.getAllByText(/Connect to Sleeper/i).length).toBeGreaterThan(0);
   });
 
@@ -31,7 +31,7 @@ describe('Lineups', () => {
   it('should show no lineup data message when no league is selected', () => {
     render(<Lineups teams={mockTeams} loading={false} />);
 
-    expect(screen.getByText(/Select a league to view your starting lineup/i)).toBeInTheDocument();
+    expect(screen.getByText(/Select a league to view your lineup/i)).toBeInTheDocument();
   });
 
   it('should display starting players when league is selected', () => {
@@ -41,8 +41,11 @@ describe('Lineups', () => {
     fireEvent.change(select, { target: { value: '1' } });
 
     expect(screen.getByText(/Player 1/i)).toBeInTheDocument();
-    expect(screen.getByText(/RB - Starting/i)).toBeInTheDocument();
-    expect(screen.queryByText(/Player 2/i)).not.toBeInTheDocument(); // Bench player should not show
+    expect(screen.getByText(/^RB$/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Starting/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Player 2/i)).toBeInTheDocument(); // Bench should show too
+    expect(screen.getByText(/^WR$/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Bench/i).length).toBeGreaterThan(0);
   });
 
   it('should show no starting lineup message when team has no starters', () => {

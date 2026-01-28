@@ -51,7 +51,7 @@ function App() {
 
   const sections = [
     { id: 'dashboard', label: 'Dashboard', icon: 'fas fa-tachometer-alt' },
-    { id: 'lineups', label: 'Starting Lineups', icon: 'fas fa-users' },
+    { id: 'lineups', label: 'Lineups', icon: 'fas fa-users' },
     { id: 'notifications', label: 'Notifications', icon: 'fas fa-bell' },
     { id: 'scoring', label: 'Scoring', icon: 'fas fa-chart-line' },
     { id: 'updates', label: 'Updates', icon: 'fas fa-info-circle' }
