@@ -31,14 +31,15 @@ describe('Notifications', () => {
   ];
 
   it('should render notifications component', () => {
-    render(<Notifications notifications={mockNotifications} loading={false} />);
+    render(<Notifications notifications={mockNotifications} loading={false} currentWeek={5} notificationsWeek={5} />);
 
     expect(screen.getByText(/League Notifications/i)).toBeInTheDocument();
     expect(screen.getByText(/Recent transactions and league updates/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Select Week:/i)).toBeInTheDocument();
   });
 
   it('should display notifications when provided', () => {
-    render(<Notifications notifications={mockNotifications} loading={false} />);
+    render(<Notifications notifications={mockNotifications} loading={false} currentWeek={5} notificationsWeek={5} />);
 
     expect(screen.getAllByText(/Trade Completed/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Waiver Claim/i).length).toBeGreaterThan(0);
@@ -46,33 +47,33 @@ describe('Notifications', () => {
   });
 
   it('should show no notifications message when notifications are empty', () => {
-    render(<Notifications notifications={[]} loading={false} />);
+    render(<Notifications notifications={[]} loading={false} currentWeek={5} notificationsWeek={5} />);
 
     expect(screen.getByText(/No Recent Activity/i)).toBeInTheDocument();
     expect(screen.getByText(/No recent transactions or league updates to show/i)).toBeInTheDocument();
   });
 
   it('should show no notifications message when notifications is null', () => {
-    render(<Notifications notifications={null} loading={false} />);
+    render(<Notifications notifications={null} loading={false} currentWeek={5} notificationsWeek={5} />);
 
     expect(screen.getByText(/No Recent Activity/i)).toBeInTheDocument();
   });
 
   it('should show loading indicator when loading', () => {
-    render(<Notifications notifications={mockNotifications} loading={true} />);
+    render(<Notifications notifications={mockNotifications} loading={true} currentWeek={5} notificationsWeek={5} />);
 
     expect(screen.getByText(/Loading notifications.../i)).toBeInTheDocument();
   });
 
   it('should display notification messages correctly', () => {
-    render(<Notifications notifications={mockNotifications} loading={false} />);
+    render(<Notifications notifications={mockNotifications} loading={false} currentWeek={5} notificationsWeek={5} />);
 
     expect(screen.getByText(/Trade completed in League 1/i)).toBeInTheDocument();
     expect(screen.getByText(/Waiver claim processed in League 1/i)).toBeInTheDocument();
   });
 
   it('should display notification times correctly', () => {
-    render(<Notifications notifications={mockNotifications} loading={false} />);
+    render(<Notifications notifications={mockNotifications} loading={false} currentWeek={5} notificationsWeek={5} />);
 
     expect(screen.getByText(/2 hours ago/i)).toBeInTheDocument();
     expect(screen.getByText(/1 day ago/i)).toBeInTheDocument();

@@ -12,10 +12,13 @@ describe('App', () => {
     allTeams: [],
     matchups: [],
     notifications: [],
+    notificationsWeek: 1,
+    notificationsLoading: false,
     currentWeek: 1,
     loading: false,
     error: null,
     loadUserData: jest.fn(),
+    loadNotificationsWeek: jest.fn(),
   };
 
   beforeEach(() => {

@@ -21,10 +21,13 @@ function App() {
     allTeams,
     matchups, 
     notifications,
+    notificationsWeek,
+    notificationsLoading,
     currentWeek,
     loading,
     error,
-    loadUserData 
+    loadUserData,
+    loadNotificationsWeek
   } = useSleeperData();
 
   useEffect(() => {
@@ -87,6 +90,10 @@ function App() {
                 <Notifications 
                   notifications={notifications}
                   loading={loading}
+                  currentWeek={currentWeek}
+                  notificationsWeek={notificationsWeek}
+                  notificationsLoading={notificationsLoading}
+                  onLoadWeek={loadNotificationsWeek}
                 />
               } />
               <Route path="/scoring" element={

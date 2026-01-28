@@ -130,10 +130,13 @@ export class SleeperApiService {
     }
   }
 
-  // Get league transactions
-  static async getLeagueTransactions(leagueId) {
+  // Get league transactions for a given week/round
+  static async getLeagueTransactions(leagueId, week) {
     try {
-      const response = await fetch(`${SLEEPER_BASE_URL}/league/${leagueId}/transactions`);
+      if (!week) {
+        throw new Error('Week is required to fetch transactions');
+      }
+      const response = await fetch(`${SLEEPER_BASE_URL}/league/${leagueId}/transactions/${week}`);
       if (!response.ok) {
         throw new Error('Failed to fetch transactions');
       }

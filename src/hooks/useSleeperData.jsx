@@ -6,6 +6,9 @@ export function useSleeperData() {
   const [allTeams, setAllTeams] = useState([]); // All teams in all leagues (including opponents)
   const [matchups, setMatchups] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [notificationsWeek, setNotificationsWeek] = useState(null);
+  const [notificationsByWeek, setNotificationsByWeek] = useState({});
+  const [notificationsLoading, setNotificationsLoading] = useState(false);
   const [currentWeek, setCurrentWeek] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -48,7 +51,7 @@ export function useSleeperData() {
             SleeperApiService.getLeagueRosters(league.league_id),
             SleeperApiService.getLeagueUsers(league.league_id),
             SleeperApiService.getLeagueMatchups(league.league_id, nflState.week),
-            SleeperApiService.getLeagueTransactions(league.league_id),
+            SleeperApiService.getLeagueTransactions(league.league_id, nflState.week),
           ]);
 
           const matchupsWithLeague = currentMatchups.map(matchup => ({
@@ -96,6 +99,8 @@ export function useSleeperData() {
       setAllTeams(allLeagueTeams);
       setMatchups(allMatchups);
       setNotifications(processedNotifications);
+      setNotificationsWeek(nflState.week);
+      setNotificationsByWeek(prev => ({ ...prev, [nflState.week]: processedNotifications }));
       setAllWeeksData(prev => ({ ...prev, [nflState.week]: allMatchups }));
 
     } catch (err) {
@@ -105,6 +110,43 @@ export function useSleeperData() {
       setLoading(false);
     }
   }, [playersData]);
+
+  const loadNotificationsWeek = useCallback(async (week) => {
+    if (!week) return;
+    if (notificationsByWeek[week]) {
+      setNotifications(notificationsByWeek[week]);
+      setNotificationsWeek(week);
+      return;
+    }
+
+    setNotificationsLoading(true);
+    try {
+      const leagueIds = Array.from(new Set(teams.map(t => t.leagueId || t.id)));
+      const allTransactions = [];
+
+      await Promise.all(
+        leagueIds.map(async (leagueId) => {
+          const leagueTransactions = await SleeperApiService.getLeagueTransactions(leagueId, week);
+          allTransactions.push(
+            ...leagueTransactions.map(t => ({
+              ...t,
+              leagueId,
+              leagueName: teams.find(x => (x.leagueId || x.id) === leagueId)?.league_name
+            }))
+          );
+        })
+      );
+
+      const processed = processTransactionsToNotifications(allTransactions);
+      setNotifications(processed);
+      setNotificationsWeek(week);
+      setNotificationsByWeek(prev => ({ ...prev, [week]: processed }));
+    } catch (e) {
+      console.error('Error loading notifications for week:', e);
+    } finally {
+      setNotificationsLoading(false);
+    }
+  }, [notificationsByWeek, teams]);
 
   const loadWeekData = useCallback(async (week) => {
     if (!week || week === currentWeek) return;
@@ -155,11 +197,14 @@ export function useSleeperData() {
     allTeams, // All teams in all leagues (including opponents)
     matchups,
     notifications,
+    notificationsWeek,
+    notificationsLoading,
     currentWeek,
     loading,
     error,
     allWeeksData,
     loadUserData,
+    loadNotificationsWeek,
     loadWeekData
   };
 }
