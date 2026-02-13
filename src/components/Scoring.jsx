@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './styles/ExpandableSection.css';
 
-function Scoring({ teams, allTeams, matchups, currentWeek, loading }) {
+function Scoring({ teams, allTeams, matchups, currentWeek, loading, loadWeekData }) {
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -110,7 +110,13 @@ function Scoring({ teams, allTeams, matchups, currentWeek, loading }) {
         <select 
           id="week-select"
           value={selectedWeek}
-          onChange={(e) => setSelectedWeek(parseInt(e.target.value))}
+          onChange={(e) => {
+            const newWeek = parseInt(e.target.value);
+            setSelectedWeek(newWeek);
+            if (loadWeekData && newWeek && newWeek !== currentWeek) {
+              loadWeekData(newWeek);
+            }
+          }}
         >
           <option value="">Choose a week...</option>
           {Array.from({ length: 18 }, (_, i) => i + 1).map(week => (

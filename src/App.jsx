@@ -29,7 +29,8 @@ function App() {
     loading,
     error,
     loadUserData,
-    loadNotificationsWeek
+    loadNotificationsWeek,
+    loadWeekData
   } = useSleeperData();
 
   useEffect(() => {
@@ -115,6 +116,7 @@ function App() {
                   matchups={matchups}
                   currentWeek={currentWeek}
                   loading={loading}
+                  loadWeekData={loadWeekData}
                 />
               } />
               <Route path="/updates" element={
