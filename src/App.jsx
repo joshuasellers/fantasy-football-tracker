@@ -144,7 +144,11 @@ function App() {
 function Header({ sections, currentSection, onSectionChange, selectedSeason, onSeasonChange }) {
   const location = useLocation();
   const currentYear = new Date().getFullYear();
-  const seasons = Array.from({ length: 5 }, (_, i) => currentYear - i);
+  // Only show current year and past years (no future years)
+  // Generate array of 5 years going backwards from current year
+  const seasons = Array.from({ length: 5 }, (_, i) => currentYear - i)
+    .filter(year => year <= currentYear) // Ensure no future years
+    .sort((a, b) => b - a); // Sort descending (newest first)
 
   return (
     <header className="header">
