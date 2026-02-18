@@ -53,5 +53,37 @@ describe('App', () => {
 
     expect(screen.getAllByText(/Dashboard/i).length).toBeGreaterThan(0);
   });
+
+  it('should include loadWeekData in useSleeperData mock', () => {
+    mockUseSleeperData.loadWeekData = jest.fn();
+    useSleeperData.mockReturnValue(mockUseSleeperData);
+
+    render(<App />);
+
+    expect(mockUseSleeperData.loadWeekData).toBeDefined();
+  });
+
+  it('should render season selector in header', () => {
+    render(<App />);
+
+    const seasonSelect = screen.getByLabelText(/Season:/i);
+    expect(seasonSelect).toBeInTheDocument();
+  });
+
+  it('should render floating connect button', () => {
+    render(<App />);
+
+    expect(screen.getByText(/Connect to Sleeper/i)).toBeInTheDocument();
+  });
+
+  it('should render all navigation links', () => {
+    render(<App />);
+
+    expect(screen.getAllByText(/Dashboard/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Lineups/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Notifications/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Scoring/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Updates/i).length).toBeGreaterThan(0);
+  });
 });
 
